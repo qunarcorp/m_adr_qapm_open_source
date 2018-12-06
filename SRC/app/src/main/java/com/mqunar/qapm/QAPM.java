@@ -14,6 +14,9 @@ import com.mqunar.qapm.dao.NetworkDataParse;
 import com.mqunar.qapm.dao.Storage;
 import com.mqunar.qapm.dao.UIDataParse;
 import com.mqunar.qapm.domain.BaseData;
+import com.mqunar.qapm.logging.AgentLogManager;
+import com.mqunar.qapm.logging.AndroidAgentLog;
+import com.mqunar.qapm.logging.NullAgentLog;
 import com.mqunar.qapm.network.sender.ISender;
 import com.mqunar.qapm.network.sender.QAPMSender;
 import com.mqunar.qapm.tracing.BackgroundTrace;
@@ -21,10 +24,12 @@ import com.mqunar.qapm.tracing.WatchMan;
 import com.mqunar.qapm.utils.AndroidUtils;
 import com.mqunar.qapm.utils.IOUtils;
 import com.mqunar.qapm.utils.NetWorkUtils;
+import com.mqunar.qapm.utils.ReflectUtils;
 
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -33,6 +38,7 @@ import java.util.Map;
 public class QAPM implements IQAPM{
 
     private static QAPM sInstance = null;
+    private static boolean isRelease;
 
     public static Context mContext;
     private ISender mSender;
@@ -42,9 +48,9 @@ public class QAPM implements IQAPM{
     private Handler mWorkHandler;
     private HandlerThread mWorkLooper;
 
-    private QAPM(Context context, JSONObject cParam){
+    private QAPM(Context context, String cParam){
         mContext = getSafeContext(context) ;
-        this.cParam = cParam == null ? getCParam() : cParam.toString();
+        this.cParam = cParam == null ? getCParam() : cParam;
         this.mWatchMan = new BackgroundTrace();
         mWorkLooper = new HandlerThread(QAPMConstant.THREAD_UPLOAD);
         mWorkLooper.start();
@@ -57,7 +63,7 @@ public class QAPM implements IQAPM{
         return context != null ? make(context, null) : null;
     }
 
-    public static QAPM make(Context context, JSONObject cParam) {
+    public static QAPM make(Context context, String cParam) {
         if (sInstance == null) {
             synchronized (QAPM.class) {
                 if (sInstance == null) {
@@ -97,7 +103,7 @@ public class QAPM implements IQAPM{
     public void addUIMonitor(Map<String, String> uiMonitorMapData) {
         if(uiMonitorMapData != null && uiMonitorMapData.size() > 0){
             BaseData uiLoadingData = UIDataParse.newInstance().convertMap2BaseData(uiMonitorMapData);
-            Storage.newStorage(mContext).putData(uiLoadingData, UIDataParse.newInstance());
+            Storage.newStorage(mContext).putData(uiLoadingData);
         }
     }
 
@@ -105,7 +111,7 @@ public class QAPM implements IQAPM{
     public void addNetMonitor(Map<String, String> netMonitorMapData) {
         if(netMonitorMapData != null && netMonitorMapData.size() > 0){
             BaseData netMonitorData = NetworkDataParse.newInstance().convertMap2BaseData(netMonitorMapData);
-            Storage.newStorage(mContext).putData(netMonitorData, NetworkDataParse.newInstance());
+            Storage.newStorage(mContext).putData(netMonitorData);
         }
     }
 
@@ -119,12 +125,21 @@ public class QAPM implements IQAPM{
     @Override
     public ISender getSender(){
         if (mSender == null) {
-            mSender = new QAPMSender(QAPMConstant.HOST_URL, QAPMConstant.PITCHER_URL,
-                    QAPMConstant.C_PARAM, QAPMConstant.REQUEST_ID);
+            String requestId = (String) ReflectUtils.invokeStaticMethod("com.mqunar.qav.uelog.QAVLog", "getRequestId", null, null);
+            if(isRelease){
+                mSender = new QAPMSender(QAPMConstant.HOST_URL, "", getCParam(), requestId);
+            } else {
+                mSender = new QAPMSender(QAPMConstant.HOST_URL_BETA, QAPMConstant.PITCHER_URL, getCParam(), requestId);
+            }
         }
         return mSender;
     }
 
+    public QAPM withLogEnabled(boolean enabled) {
+        isRelease = !enabled;
+        AgentLogManager.setAgentLog((enabled ? new AndroidAgentLog() : new NullAgentLog()));
+        return this;
+    }
 
 
     @Override
@@ -164,8 +179,19 @@ public class QAPM implements IQAPM{
         }
     }
 
+    public static String getSaveDataFile(String name){
+        String path = IOUtils.getUploadDir(mContext);
+        File destFile = new File(path, name);
+        try {
+            destFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return destFile.toString();
+    }
+
     public void upload(final boolean isforceSend) {
-        ExceptionFinder.getInstance().checkForThrows(mContext);
+//        ExceptionFinder.getInstance().checkForThrows(mContext);
         //防止主线程调用引起ANR
         mWorkHandler.post(new Runnable() {
             @Override

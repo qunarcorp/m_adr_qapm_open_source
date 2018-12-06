@@ -16,9 +16,12 @@ public class QAPMConstant {
     public static String cid = "";
 
     //线上服务器地址
-    public static final String HOST_URL = "";
+    public static final String HOST_URL = "http://mloganalysts.corp.qunar.com/api/log/unifiedLog";
+    public static final String HOST_URL_BETA = "http://l-acra1.wap.beta.cn0.qunar.com:9099/api/log/unifiedLog";
+
     //线上Pitcher地址
-    public static final String PITCHER_URL = "";
+    public static final String PITCHER_URL = "http://front.pitcher.beta.qunar.com/pitcher-proxy";
+
     //C参数
     public static final String C_PARAM = "";
     //requestId

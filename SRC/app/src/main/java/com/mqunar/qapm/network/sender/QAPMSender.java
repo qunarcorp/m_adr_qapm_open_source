@@ -6,10 +6,8 @@ import android.text.TextUtils;
 import com.mqunar.qapm.QAPMConstant;
 import com.mqunar.qapm.logging.AgentLog;
 import com.mqunar.qapm.logging.AgentLogManager;
-import com.mqunar.qapm.utils.AndroidUtils;
 import com.mqunar.qapm.utils.IOUtils;
 import com.mqunar.qapm.utils.NetWorkUtils;
-import com.mqunar.qapm.utils.QAPMCompressUtils;
 import com.mqunar.qapm.utils.SafeUtils;
 
 import java.io.File;
@@ -68,7 +66,7 @@ public class QAPMSender implements ISender {
             });
             //发送文件
             for (String fileName : fileNames) {
-                log.info("send necro data : " + fileName);
+                log.info("send apm data : " + fileName);
                 sendFile(context, filePath + "/" + fileName);
             }
         }
@@ -84,42 +82,31 @@ public class QAPMSender implements ISender {
             if (SafeUtils.canEncryption()) {
                 jsonData = SafeUtils.da(jsonData);
             }
-            String compressFileName = fileName + "gz";
             log.info("发送 JSON数据：" + jsonData);
-            QAPMCompressUtils.doCompressString(jsonData, compressFileName);
-            jsonData = null;
-            log.info("send necro file : " + compressFileName);
             final HttpHeader reqHeader = new HttpHeader();
             if (!TextUtils.isEmpty(mRequestId)) {
                 reqHeader.addHeader("qrid", mRequestId);
             }
-            ArrayList<FormPart> formParts = getFormParts(compressFileName);
-
+            ArrayList<FormPart> formParts = getFormParts(jsonData);
             Pitcher pitcher = new Pitcher(context, mHostUrl, formParts, reqHeader);
             if (!TextUtils.isEmpty(mPitcherUrl)) {
                 pitcher.setProxyUrl(mPitcherUrl);
             }
-
             PitcherResponse response = pitcher.request();
-
             if (response.e != null) {
-                log.info("send necro file error : " + compressFileName + " error : " + response.e);
+                log.info("send apm file error : " + " error : " + response.e);
                 //错误 -- 删除压缩文件
-                deleteFile(new File(compressFileName));
             } else if (response.respcode > 400) {
-                log.info("send necro file failed : " + compressFileName + "  resCode is: " + response.respcode);
+                log.info("send apm file failed : " + "  resCode is: " + response.respcode);
                 //失败 -- 删除压缩文件
-                deleteFile(new File(compressFileName));
             } else {
-                log.info("send necro file success : " + compressFileName);
-                //成功 -- 1.本地删除加密原始文件;2.删除压缩文件。
-                deleteFile(new File(compressFileName));
                 deleteFile(new File(fileName));
             }
+            jsonData = null;
         }
     }
 
-    private ArrayList<FormPart> getFormParts(String compressFileName) {
+    private ArrayList<FormPart> getFormParts(String jsonData) {
         ArrayList<FormPart> formParts = new ArrayList<>();
         //p参数
         FormPart pPart = new FormPart("p", QAPMConstant.PLATFORM);
@@ -130,8 +117,8 @@ public class QAPMSender implements ISender {
         logTypePart.addHeader("X-ClientEncoding", "none");
         formParts.add(logTypePart);
         //b参数
-        FormPart bPart = new FormPart("b", compressFileName, "application/octet-stream");
-        bPart.addHeader("X-ClientEncoding", "gzip");
+        FormPart bPart = new FormPart("b", jsonData);
+        bPart.addHeader("X-ClientEncoding", "none");
         formParts.add(bPart);
         //C参数
         FormPart cPart = new FormPart("c", mCParam);

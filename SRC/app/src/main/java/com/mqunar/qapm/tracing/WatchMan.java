@@ -160,7 +160,7 @@ public abstract class WatchMan implements Application.ActivityLifecycleCallbacks
     private void upload(boolean isforceSend){
         QAPM instance = QAPM.getInstance();
         if(instance != null){
-            instance.upload(false);
+            instance.upload(isforceSend);
         }
     }
 

@@ -4,9 +4,15 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
 
+import com.mqunar.qapm.QAPM;
 import com.mqunar.qapm.QAPMConstant;
 import com.mqunar.qapm.domain.BaseData;
+import com.mqunar.qapm.domain.NetworkData;
+import com.mqunar.qapm.domain.UIData;
 import com.mqunar.qapm.utils.IOUtils;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,24 +20,35 @@ import java.util.List;
 public class Storage implements IStorage{
 
     private static final String TAG = "Storage";
-    private static final int MAX_SIZE = 10;
+    private static final int MAX_SIZE = 20;
+    private static Storage sInstance = null;
 
     private static HandlerThread mStorageHandlerThread;
     private static Handler mStorageHandler;
 
     private static List<BaseData> mStorageData = new ArrayList<>();
-    private Context context;
 
-    private Storage(Context context) {
-        this.context = context;
+    private NetworkDataParse networkDataParse;
+    private UIDataParse uiDataParse;
+
+    private Storage() {
+        networkDataParse = NetworkDataParse.newInstance();
+        uiDataParse = UIDataParse.newInstance();
     }
 
     public static Storage newStorage(Context context) {
-        return new Storage(context);
+        if (sInstance == null) {
+            synchronized (UIDataParse.class) {
+                if (sInstance == null) {
+                    sInstance = new Storage();
+                }
+            }
+        }
+        return sInstance;
     }
 
     @Override
-    public void putData(final BaseData data, final IDataParse parse) {
+    public void putData(final BaseData data) {
         getStorageHandler().post(new Runnable() {
             public void run() {
                 if(data == null){
@@ -41,24 +58,44 @@ public class Storage implements IStorage{
                     mStorageData.add(data);
                     return;
                 }
-                saveData(data, parse);
+                saveData(data);
             }
         });
     }
 
     @Override
-    public void saveData(final BaseData data, IDataParse parse) {
-        mStorageData.add(data);
-        String saveDataFilePath = IOUtils.getSaveDataFile(context, System.currentTimeMillis() + "");
-        IOUtils.str2File(parse.convertBaseData2Json(mStorageData), saveDataFilePath);
+    public void saveData(final BaseData data) {
+        if(data != null){
+            mStorageData.add(data);
+        }
+        String saveDataFilePath = QAPM.getSaveDataFile(System.currentTimeMillis() + "");
+        IOUtils.str2File(convertBaseData2Json(mStorageData), saveDataFilePath);
         mStorageData.clear();
+    }
+
+    private String convertBaseData2Json(List<BaseData> mStorageData) {
+        JSONArray jsonArray = new JSONArray();
+        for (int i = 0; i < mStorageData.size(); i++){
+            JSONObject jsonObject = null;
+            if(mStorageData.get(i) instanceof NetworkData){
+                jsonObject = networkDataParse.convertImplData2Json(mStorageData.get(i));
+            } else if(mStorageData.get(i) instanceof UIData){
+                jsonObject = uiDataParse.convertImplData2Json(mStorageData.get(i));
+            }
+            if(jsonObject != null){
+                jsonArray.put(jsonObject);
+            }
+        }
+        return jsonArray.toString();
     }
 
     @Override
     public void popData() {
         getStorageHandler().post(new Runnable() {
             public void run() {
-
+                if(mStorageData != null && mStorageData.size() > 0){
+                    saveData(null);
+                }
             }
         });
     }

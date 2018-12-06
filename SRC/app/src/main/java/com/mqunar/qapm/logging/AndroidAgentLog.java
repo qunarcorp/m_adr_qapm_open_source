@@ -6,7 +6,7 @@ import android.util.Log;
  * Created by jingmin.xing on 2015/8/30.
  */
 public class AndroidAgentLog implements AgentLog {
-    private static final String TAG = "com.mqunar.necro.agent";
+    private static final String TAG = "qapm";
     private int level = INFO;
 
     public AndroidAgentLog() {

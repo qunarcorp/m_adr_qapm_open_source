@@ -49,6 +49,7 @@ public class NetworkDataParse implements IDataParse{
             if(baseData instanceof NetworkData){
                 NetworkData data = (NetworkData) baseData;
                 JSONObject jsonObject = new JSONObject();
+                jsonObject.put("action", data.action);
                 jsonObject.put("reqUrl", data.reqUrl);
                 jsonObject.put("startTime", data.startTime);
                 jsonObject.put("endTime", data.endTime);

@@ -9,7 +9,7 @@ import com.mqunar.qapm.logging.AgentLogManager;
 
 import java.lang.reflect.Method;
 
-class ReflectUtils {
+public class ReflectUtils {
     private static final AgentLog log = AgentLogManager.getAgentLog();
 
     private static Method getMethod(Class<?> clazz, String mName, Class<?>[] paramType) {
@@ -38,7 +38,7 @@ class ReflectUtils {
      * @return Object
      * @since 2014年1月21日下午4:35:42
      */
-    static Object invokeStaticMethod(String className, String mName,
+    public static Object invokeStaticMethod(String className, String mName,
                                      Class<?>[] paramType, Object[] paramValues) {
         try {
             Class<?> objClz = Class.forName(className);

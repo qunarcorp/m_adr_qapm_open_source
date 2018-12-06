@@ -19,7 +19,7 @@ public class QNetworkFailedContainer {
             UIData uiData = QLoadingReportHelper.newInstance().popReportMessage();
             if (uiData != null){
                 uiData.status = UIData.ERROR;
-                Storage.newStorage(QAPM.mContext).putData(uiData, UIDataParse.newInstance());
+//                Storage.newStorage(QAPM.mContext).putData(uiData);
             }
         }
     }

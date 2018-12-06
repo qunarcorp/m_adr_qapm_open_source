@@ -251,7 +251,7 @@ public class TransactionStateUtil {
     public static void end(TransactionState transactionState) {
         NetworkData networkData = transactionState.end();
         if(networkData != null && !networkData.excludeImageData() && !networkData.excludeIllegalData()) {
-            Storage.newStorage(QAPM.mContext).putData(networkData, NetworkDataParse.newInstance());
+            Storage.newStorage(QAPM.mContext).putData(networkData);
         }
     }
 }
