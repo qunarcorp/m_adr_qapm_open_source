@@ -8,7 +8,6 @@ import com.mqunar.qapm.logging.AgentLog;
 import com.mqunar.qapm.logging.AgentLogManager;
 import com.mqunar.qapm.utils.IOUtils;
 import com.mqunar.qapm.utils.NetWorkUtils;
-import com.mqunar.qapm.utils.SafeUtils;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -78,9 +77,6 @@ public class QAPMSender implements ISender {
             jsonData = IOUtils.file2Str(fileName);
             if (jsonData == null) {
                 return;
-            }
-            if (SafeUtils.canEncryption()) {
-                jsonData = SafeUtils.da(jsonData);
             }
             log.info("发送 JSON数据：" + jsonData);
             final HttpHeader reqHeader = new HttpHeader();
