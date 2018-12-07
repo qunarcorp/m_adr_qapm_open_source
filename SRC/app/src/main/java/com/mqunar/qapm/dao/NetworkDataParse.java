@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -79,24 +80,6 @@ public class NetworkDataParse implements IDataParse{
     }
 
 
-    /**
-     * \
-     public String ; // hyNet/rnNet/iosNet/adrNet
-     public String ; //请求的url地址
-     public String ; // 网络请求开始时的时间戳,精确到毫秒
-     public String ; // 网络请求结束或者出错时的时间戳,精确到毫秒
-     public String ; // 网络请求大小，单位为*字节*
-     public String ; // 收到的网络响应数据大小，单位为*字节*
-     public String ; // HTTP 请求的状态码，0表示正常，如“404”、“503”、“300”等
-     public String ; // http发生异常的原因,可选
-     public String ; // 发送网络请求时的网络类型，可选值为：“2G”、“3G”、“4G”、“Wifi”，“Cellular”，“Unknow”
-     public String ; // 请求成功或者失败;“success”( 络错误码在100~399); “error”(其它情 况);
-     public String ; // 顶层页面，
-
-     public HashMap<String, String>  = new HashMap<>();//过滤后的header
-     * @param data 要转换的数据
-     * @return
-     */
     @Override
     public BaseData convertMap2BaseData(Map<String, String> data) {
         NetworkData networkData = new NetworkData();
@@ -112,20 +95,35 @@ public class NetworkDataParse implements IDataParse{
         networkData.netStatus = data.get("netStatus") != null ? data.get("netStatus") : AndroidUtils.UNKNOWN;
         networkData.topPage = data.get("topPage") != null ? data.get("topPage") : AndroidUtils.UNKNOWN;
         String headers = data.get("headers") != null ? data.get("headers") : AndroidUtils.UNKNOWN;
-//        if(headers != null){
-//            try {
-//                JSONArray array = new JSONArray(headers);
-//                for (int i = 0; i < array.length(); i++) {
-//                    if(array.getJSONObject(i) != null){
-//                        array.getJSONObject(i).getJSONObject
-//                    }
-//                    networkData.headers.put()
-//                }
-//
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//        }
+
+       if(headers != null){
+            try {
+                HashMap<String, String> headersMap = new HashMap<>();
+                JSONObject jsonObject = new JSONObject(headers);
+                if(jsonObject.get("Pitcher-Type") != null){
+                    headersMap.put("Pitcher-Type",jsonObject.get("Pitcher-Type").toString());
+                }
+                if(jsonObject.get("Pitcher-Url") != null){
+                    headersMap.put("Pitcher-Url",jsonObject.get("Pitcher-Url").toString());
+                }
+                if(jsonObject.get("L-Date") != null){
+                    headersMap.put("L-Date",jsonObject.get("L-Date").toString());
+                }
+                if(jsonObject.get("User-Agent") != null){
+                    headersMap.put("User-Agent",jsonObject.get("User-Agent").toString());
+                }
+                if(jsonObject.get("qrid") != null){
+                    headersMap.put("qrid",jsonObject.get("qrid").toString());
+                }
+                if(jsonObject.get("L-Uuid") != null){
+                    headersMap.put("L-Uuid",jsonObject.get("L-Uuid").toString());
+                }
+                networkData.headers = headersMap;
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         return networkData;
     }
 }

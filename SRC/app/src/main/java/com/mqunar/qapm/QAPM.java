@@ -6,10 +6,7 @@ import android.content.pm.PackageInfo;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
 
-import com.mqunar.qapm.check.ExceptionFinder;
 import com.mqunar.qapm.dao.NetworkDataParse;
 import com.mqunar.qapm.dao.Storage;
 import com.mqunar.qapm.dao.UIDataParse;

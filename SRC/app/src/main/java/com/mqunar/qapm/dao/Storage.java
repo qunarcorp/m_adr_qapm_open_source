@@ -20,7 +20,7 @@ import java.util.List;
 public class Storage implements IStorage{
 
     private static final String TAG = "Storage";
-    private static final int MAX_SIZE = 20;
+    private static final int MAX_SIZE = 10;
     private static Storage sInstance = null;
 
     private static HandlerThread mStorageHandlerThread;
@@ -54,7 +54,7 @@ public class Storage implements IStorage{
                 if(data == null){
                     return ;
                 }
-                if(mStorageData.size() < MAX_SIZE){
+                if(mStorageData.size() < MAX_SIZE -1){
                     mStorageData.add(data);
                     return;
                 }
