@@ -69,8 +69,10 @@ public class Storage implements IStorage{
             mStorageData.add(data);
         }
         String saveDataFilePath = QAPM.getSaveDataFile(System.currentTimeMillis() + "");
-        IOUtils.str2File(convertBaseData2Json(mStorageData), saveDataFilePath);
-        mStorageData.clear();
+        if(saveDataFilePath != null){
+            IOUtils.str2File(convertBaseData2Json(mStorageData), saveDataFilePath);
+            mStorageData.clear();
+        }
     }
 
     private String convertBaseData2Json(List<BaseData> mStorageData) {

@@ -178,6 +178,9 @@ public class QAPM implements IQAPM{
 
     public static String getSaveDataFile(String name){
         String path = IOUtils.getUploadDir(mContext);
+        if(path == null){
+            return null;
+        }
         File destFile = new File(path, name);
         try {
             destFile.createNewFile();
@@ -199,9 +202,12 @@ public class QAPM implements IQAPM{
                 if (isforceSend) {
                     Storage.newStorage(mContext).popData();
                 }
-                String[] tempFileName = new File(IOUtils.getUploadDir(mContext)).list();
-                if (tempFileName != null && tempFileName.length > 0) {
-                    getSender().send(mContext, IOUtils.getUploadDir(mContext), cParam);
+                String path = IOUtils.getUploadDir(mContext);
+                if(path != null){
+                    String[] tempFileName = new File(path).list();
+                    if (tempFileName != null && tempFileName.length > 0) {
+                        getSender().send(mContext, path, cParam);
+                    }
                 }
             }
         });

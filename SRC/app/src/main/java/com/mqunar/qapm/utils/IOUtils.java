@@ -14,6 +14,9 @@ public class IOUtils {
 
     public static String getUploadDir(Context mContext){
         if (sTempDir == null) {
+            if(mContext == null){
+                return null;
+            }
             try {
                 sTempDir = mContext.getFilesDir().getAbsolutePath() + File.separator + "qapm";
             } catch (Exception e) {
