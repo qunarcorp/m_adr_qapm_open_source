@@ -184,20 +184,6 @@ public final class TransactionState {
         }
     }
 
-    private String getLocation() {//大客户端暂时先反射大客户端
-        try {
-            Class<?> objClz = Class.forName("qunar.sdk.location.LocationFacade");
-            Method method = objClz.getDeclaredMethod("getNewestCacheLocation");
-            Location location = (Location) method.invoke(null);
-            if (location != null) {
-                return location.getLongitude() + "," + location.getLatitude();
-            }
-        } catch (Throwable e) {
-//            QLog.e(e);
-        }
-        return "";
-    }
-
     public String getContentType() {
         return this.contentType;
     }
