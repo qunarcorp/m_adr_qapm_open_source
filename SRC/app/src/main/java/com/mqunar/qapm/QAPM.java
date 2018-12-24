@@ -3,9 +3,11 @@ package com.mqunar.qapm;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
+import android.location.Location;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.text.TextUtils;
 
 import com.mqunar.qapm.dao.NetworkDataParse;
 import com.mqunar.qapm.dao.Storage;
@@ -22,11 +24,13 @@ import com.mqunar.qapm.utils.AndroidUtils;
 import com.mqunar.qapm.utils.IOUtils;
 import com.mqunar.qapm.utils.NetWorkUtils;
 import com.mqunar.qapm.utils.ReflectUtils;
+import com.mqunar.qapm.utils.SystemUtils;
 
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
@@ -86,12 +90,16 @@ public class QAPM implements IQAPM{
         try {
             String pkgName = mContext.getPackageName();
             PackageInfo packageInfo = mContext.getPackageManager().getPackageInfo(pkgName, 0);
-            jobj.put("ma", AndroidUtils.getMac());
-            jobj.put("osVersion", Build.VERSION.RELEASE + "_" + Build.VERSION.SDK_INT);
+            jobj.put("vid", packageInfo.versionCode);
             jobj.put("pid", QAPMConstant.pid);
             jobj.put("uid", AndroidUtils.getIMEI(mContext));
-            jobj.put("vid", packageInfo.versionCode);
-            jobj.put("ke", String.valueOf(System.currentTimeMillis()));
+            jobj.put("osVersion", Build.VERSION.RELEASE + "_" + Build.VERSION.SDK_INT);
+            jobj.put("model", SystemUtils.getSystemModel());
+            String mon = AndroidUtils.carrierNameFromContext(mContext);
+            jobj.put("mno", TextUtils.isEmpty(mon) ? AndroidUtils.UNKNOWN : mon);
+            jobj.put("loc", TextUtils.isEmpty(getLocation()) ? AndroidUtils.UNKNOWN : getLocation());
+            jobj.put("key", String.valueOf(System.currentTimeMillis()));
+            jobj.put("ext", ""); // 该字段先不支持
         } catch (Exception ignore) {}
         return jobj.toString();
     }
@@ -219,5 +227,19 @@ public class QAPM implements IQAPM{
 
     public static String getActiveNetworkWanType() {
         return AndroidUtils.wanType(mContext);
+    }
+
+    private String getLocation() {//大客户端暂时先反射大客户端
+        try {
+            Class<?> objClz = Class.forName("qunar.sdk.location.LocationFacade");
+            Method method = objClz.getDeclaredMethod("getNewestCacheLocation");
+            Location location = (Location) method.invoke(null);
+            if (location != null) {
+                return location.getLongitude() + "," + location.getLatitude();
+            }
+        } catch (Throwable e) {
+//            QLog.e(e);
+        }
+        return "";
     }
 }
