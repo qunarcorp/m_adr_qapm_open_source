@@ -44,4 +44,11 @@ public class QAPMConstant {
 //    beta: http://l-wap6.wap.beta.cn6.qunar.com:9088/api/log/androidPerformanceLog
 //    prod: http://mwhale.corp.qunar.com/api/log/androidPerformanceLog
 
+    public static final float DEFAULT_DEVICE_REFRESH_RATE = 16.666667f;
+    public static final int TIME_MILLIS_TO_NANO = 1000000;
+    public static final int DEFAULT_DROPPED_NORMAL = 3;
+    public static final int DEFAULT_DROPPED_MIDDLE = 9;
+    public static final int DEFAULT_DROPPED_HIGH = 24;
+    public static final int DEFAULT_DROPPED_FROZEN = 42;
+
 }
