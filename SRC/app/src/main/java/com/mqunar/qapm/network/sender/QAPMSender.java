@@ -84,15 +84,17 @@ public class QAPMSender implements ISender {
             if (jsonData == null) {
                 return;
             }
-            log.info("发送 JSON数据：" + jsonData);
+            log.info("发送 b 参：" + jsonData);
             final HttpHeader reqHeader = new HttpHeader();
             if (!TextUtils.isEmpty(mRequestId)) {
                 reqHeader.addHeader("qrid", mRequestId);
             }
-            ArrayList<FormPart> formParts = getFormParts(jsonData, getCParam(context));
+            String param = getCParam(context);
+            ArrayList<FormPart> formParts = getFormParts(jsonData, param);
             if(formParts == null){
                 return ;
             }
+            log.info("发送 c 参：" + param);
             Pitcher pitcher = new Pitcher(context, mHostUrl, formParts, reqHeader);
             if (!TextUtils.isEmpty(mPitcherUrl)) {
                 pitcher.setProxyUrl(mPitcherUrl);
