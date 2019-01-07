@@ -14,6 +14,7 @@ import com.mqunar.qapm.utils.AndroidUtils;
 import com.mqunar.qapm.utils.IOUtils;
 import com.mqunar.qapm.utils.NetWorkUtils;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -137,7 +138,7 @@ public class QAPMSender implements ISender {
 
     private boolean isJson(String content){
         try{
-            new JSONObject(content);
+            new JSONArray(content);
             return true;
         }catch(Exception e){
             // TODO 这个后续得删掉
