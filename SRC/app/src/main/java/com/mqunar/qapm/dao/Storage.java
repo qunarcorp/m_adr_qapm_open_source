@@ -7,6 +7,7 @@ import android.os.HandlerThread;
 import com.mqunar.qapm.QAPM;
 import com.mqunar.qapm.QAPMConstant;
 import com.mqunar.qapm.domain.BaseData;
+import com.mqunar.qapm.domain.FPSData;
 import com.mqunar.qapm.domain.NetworkData;
 import com.mqunar.qapm.domain.UIData;
 import com.mqunar.qapm.utils.IOUtils;
@@ -83,6 +84,9 @@ public class Storage implements IStorage{
                 jsonObject = networkDataParse.convertImplData2Json(mStorageData.get(i));
             } else if(mStorageData.get(i) instanceof UIData){
                 jsonObject = uiDataParse.convertImplData2Json(mStorageData.get(i));
+            }else if(mStorageData.get(i) instanceof FPSData){
+                FPSData fpsData = (FPSData) mStorageData.get(i);
+                jsonObject = fpsData.toJSONObject();
             }
             if(jsonObject != null){
                 jsonArray.put(jsonObject);
