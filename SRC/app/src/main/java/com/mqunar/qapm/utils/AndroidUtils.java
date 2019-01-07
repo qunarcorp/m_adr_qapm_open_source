@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.database.Cursor;
@@ -11,6 +12,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Looper;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -447,6 +449,15 @@ public class AndroidUtils {
         } else {
             return null;
         }
+    }
+    public static boolean isInMainThread(final long threadId) {
+        return Looper.getMainLooper().getThread().getId() == threadId;
+    }
+    public static String getSceneForString( Activity activity, Fragment fragment) {
+        if (null == activity) {
+            return "null";
+        }
+        return activity.getClass().getName() + (fragment == null ? "" : "&" + fragment.getClass().getName());
     }
 
     @TargetApi(Build.VERSION_CODES.DONUT)
