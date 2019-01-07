@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.text.TextUtils;
 
+import com.mqunar.qapm.core.ApplicationLifeObserver;
 import com.mqunar.qapm.dao.NetworkDataParse;
 import com.mqunar.qapm.dao.Storage;
 import com.mqunar.qapm.dao.UIDataParse;
@@ -36,7 +37,7 @@ import java.util.Map;
 /**
  * 最上层的管理类
  */
-public class QAPM implements IQAPM{
+public class QAPM implements IQAPM {
 
     private static QAPM sInstance = null;
     private static boolean isRelease;
@@ -45,14 +46,15 @@ public class QAPM implements IQAPM{
     private ISender mSender;
     private WatchMan mWatchMan;
 
-    private String cParam ;
+    private String cParam;
     private Handler mWorkHandler;
     private HandlerThread mWorkLooper;
 
-    private QAPM(Context context, String cParam){
-        mContext = getSafeContext(context) ;
+    private QAPM(Context context, String cParam) {
+        mContext = getSafeContext(context);
         this.cParam = cParam == null ? getCParam() : cParam;
         this.mWatchMan = new BackgroundTrace();
+        initApplicationLifeObserver();
         mWorkLooper = new HandlerThread(QAPMConstant.THREAD_UPLOAD);
         mWorkLooper.start();
         mWorkHandler = new Handler(mWorkLooper.getLooper());
@@ -75,7 +77,7 @@ public class QAPM implements IQAPM{
         return sInstance;
     }
 
-    public static QAPM getInstance(){
+    public static QAPM getInstance() {
         return sInstance;
     }
 
@@ -83,7 +85,7 @@ public class QAPM implements IQAPM{
         if (mContext == null) {
             return null;
         }
-        if(cParam != null){
+        if (cParam != null) {
             return cParam;
         }
         JSONObject jobj = new JSONObject();
@@ -100,13 +102,14 @@ public class QAPM implements IQAPM{
             jobj.put("loc", TextUtils.isEmpty(getLocation()) ? AndroidUtils.UNKNOWN : getLocation());
             jobj.put("key", String.valueOf(System.currentTimeMillis()));
             jobj.put("ext", ""); // 该字段先不支持
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
         return jobj.toString();
     }
 
     @Override
     public void addUIMonitor(Map<String, String> uiMonitorMapData) {
-        if(uiMonitorMapData != null && uiMonitorMapData.size() > 0){
+        if (uiMonitorMapData != null && uiMonitorMapData.size() > 0) {
             BaseData uiLoadingData = UIDataParse.newInstance().convertMap2BaseData(uiMonitorMapData);
             Storage.newStorage(mContext).putData(uiLoadingData);
         }
@@ -114,7 +117,7 @@ public class QAPM implements IQAPM{
 
     @Override
     public void addNetMonitor(Map<String, String> netMonitorMapData) {
-        if(netMonitorMapData != null && netMonitorMapData.size() > 0){
+        if (netMonitorMapData != null && netMonitorMapData.size() > 0) {
             BaseData netMonitorData = NetworkDataParse.newInstance().convertMap2BaseData(netMonitorMapData);
             Storage.newStorage(mContext).putData(netMonitorData);
         }
@@ -122,16 +125,16 @@ public class QAPM implements IQAPM{
 
     @Override
     public void setSender(ISender sender) {
-        if(sender != null){
+        if (sender != null) {
             mSender = sender;
         }
     }
 
     @Override
-    public ISender getSender(){
+    public ISender getSender() {
         if (mSender == null) {
             String requestId = (String) ReflectUtils.invokeStaticMethod("com.mqunar.qav.uelog.QAVLog", "getRequestId", null, null);
-            if(isRelease){
+            if (isRelease) {
                 mSender = new QAPMSender(QAPMConstant.HOST_URL, "", getCParam(), requestId);
             } else {
                 mSender = new QAPMSender(QAPMConstant.HOST_URL_BETA, QAPMConstant.PITCHER_URL, getCParam(), requestId);
@@ -148,7 +151,7 @@ public class QAPM implements IQAPM{
 
 
     @Override
-    public void release(){
+    public void release() {
         if (mWorkLooper != null) {
             mWorkLooper.quit();
         }
@@ -156,14 +159,25 @@ public class QAPM implements IQAPM{
     }
 
     private void registerActivityLifecycleCallbacks() {
-        if(mContext != null && mContext instanceof Application && mWatchMan != null){
-            ((Application) mContext).registerActivityLifecycleCallbacks(mWatchMan);
+        if (mContext != null && mContext instanceof Application) {
+            if (mWatchMan != null) {
+                ((Application) mContext).registerActivityLifecycleCallbacks(mWatchMan);
+            }
+
         }
     }
 
+    private void initApplicationLifeObserver() {
+        if (ApplicationLifeObserver.getInstance() == null) {
+            ApplicationLifeObserver.init((Application) mContext);
+        }
+        ApplicationLifeObserver.getInstance().initTracePlugin((Application) mContext);
+    }
+
     private void unregisterActivityLifecycleCallbacks() {
-        if(mContext != null && mContext instanceof Application && mWatchMan != null){
+        if (mContext != null && mContext instanceof Application && mWatchMan != null) {
             ((Application) mContext).unregisterActivityLifecycleCallbacks(mWatchMan);
+            ((Application) mContext).unregisterActivityLifecycleCallbacks(ApplicationLifeObserver.getInstance());
         }
     }
 
@@ -184,9 +198,9 @@ public class QAPM implements IQAPM{
         }
     }
 
-    public static String getSaveDataFile(String name){
+    public static String getSaveDataFile(String name) {
         String path = IOUtils.getUploadDir(mContext);
-        if(path == null){
+        if (path == null) {
             return null;
         }
         File destFile = new File(path, name);
@@ -211,7 +225,7 @@ public class QAPM implements IQAPM{
                     Storage.newStorage(mContext).popData();
                 }
                 String path = IOUtils.getUploadDir(mContext);
-                if(path != null){
+                if (path != null) {
                     String[] tempFileName = new File(path).list();
                     if (tempFileName != null && tempFileName.length > 0) {
                         getSender().send(mContext, path, cParam);
