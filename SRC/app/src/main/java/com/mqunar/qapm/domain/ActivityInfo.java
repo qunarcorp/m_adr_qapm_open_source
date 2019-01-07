@@ -3,8 +3,8 @@ package com.mqunar.qapm.domain;
 public class ActivityInfo {
 
     public long createTime;
-    public long fristResumedTime ;
+    public long firstResumedTime ;
     public String activityName;
 
-    public boolean isFristResumed = true;
+    public boolean isFirstResumed = true;
 }

@@ -1,5 +1,6 @@
 package com.mqunar.qapm.dao;
 
+import com.mqunar.qapm.QAPMConstant;
 import com.mqunar.qapm.domain.BaseData;
 import com.mqunar.qapm.domain.NetworkData;
 import com.mqunar.qapm.logging.AgentLog;
@@ -50,7 +51,7 @@ public class NetworkDataParse implements IDataParse{
             if(baseData instanceof NetworkData){
                 NetworkData data = (NetworkData) baseData;
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("action", data.action);
+                jsonObject.put("action", QAPMConstant.LOG_NET_TYPE);
                 jsonObject.put("reqUrl", data.reqUrl);
                 jsonObject.put("startTime", data.startTime);
                 jsonObject.put("endTime", data.endTime);

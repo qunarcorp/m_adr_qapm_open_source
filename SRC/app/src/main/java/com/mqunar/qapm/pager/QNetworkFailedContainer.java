@@ -4,7 +4,6 @@ import android.view.View;
 
 import com.mqunar.qapm.QAPM;
 import com.mqunar.qapm.dao.Storage;
-import com.mqunar.qapm.dao.UIDataParse;
 import com.mqunar.qapm.domain.UIData;
 
 /**
@@ -19,7 +18,8 @@ public class QNetworkFailedContainer {
             UIData uiData = QLoadingReportHelper.newInstance().popReportMessage();
             if (uiData != null){
                 uiData.status = UIData.ERROR;
-//                Storage.newStorage(QAPM.mContext).putData(uiData);
+                uiData.netType = QAPM.getActiveNetworkWanType();
+                Storage.newStorage(QAPM.mContext).putData(uiData);
             }
         }
     }

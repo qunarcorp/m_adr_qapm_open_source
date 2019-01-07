@@ -2,8 +2,6 @@ package com.mqunar.qapm.tracing;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,13 +15,8 @@ import com.mqunar.qapm.domain.UIData;
 import com.mqunar.qapm.pager.QLoadingReportHelper;
 import com.mqunar.qapm.utils.AndroidUtils;
 
-import java.lang.ref.WeakReference;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.WeakHashMap;
 
 /**
@@ -173,9 +166,9 @@ public abstract class WatchMan implements Application.ActivityLifecycleCallbacks
 
     private void recordResumedTime(String activityName){
         for (ActivityInfo activityInfo : sActivityInfos){
-            if(activityInfo.activityName.equalsIgnoreCase(activityName) && activityInfo.isFristResumed){
-                activityInfo.fristResumedTime = System.currentTimeMillis();
-                activityInfo.isFristResumed = false;
+            if(activityInfo.activityName.equalsIgnoreCase(activityName) && activityInfo.isFirstResumed){
+                activityInfo.firstResumedTime = System.currentTimeMillis();
+                activityInfo.isFirstResumed = false;
             }
         }
     }
