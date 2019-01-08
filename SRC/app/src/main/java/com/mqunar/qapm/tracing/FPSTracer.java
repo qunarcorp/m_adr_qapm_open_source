@@ -11,9 +11,12 @@ import com.mqunar.qapm.core.QAPMHandlerThread;
 import com.mqunar.qapm.dao.Storage;
 import com.mqunar.qapm.domain.BaseData;
 import com.mqunar.qapm.domain.FPSData;
+import com.mqunar.qapm.logging.AgentLog;
+import com.mqunar.qapm.logging.AgentLogManager;
 import com.mqunar.qapm.plugin.TracePlugin;
 import com.mqunar.qapm.schedule.LazyScheduler;
 import com.mqunar.qapm.utils.AndroidUtils;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -228,41 +231,41 @@ public class FPSTracer extends BaseTracer implements LazyScheduler.ILazyTask, Vi
         }
 
 
-        float fps = Math.min(60.f, 1000.f * OFFSET_TO_MS * (count) / sumTime);
+        int fps = (int) Math.min(60.f, 1000.f * OFFSET_TO_MS * (count) / sumTime);
 
         try {
 
             FPSData fpsData = new FPSData();
 
             FPSData.FPSLevel fpsLevel = new FPSData.FPSLevel();
-            fpsLevel.dropped_best = dropLevel[DropStatus.DROPPED_BEST.index];
-            fpsLevel.dropped_normal = dropLevel[DropStatus.DROPPED_NORMAL.index];
-            fpsLevel.dropped_middle = dropLevel[DropStatus.DROPPED_MIDDLE.index];
-            fpsLevel.dropped_high = dropLevel[DropStatus.DROPPED_HIGH.index];
-            fpsLevel.dropped_frozen = dropLevel[DropStatus.DROPPED_FROZEN.index];
+            fpsLevel.dropped_best = String.valueOf(dropLevel[DropStatus.DROPPED_BEST.index]);
+            fpsLevel.dropped_normal = String.valueOf(dropLevel[DropStatus.DROPPED_NORMAL.index]);
+            fpsLevel.dropped_middle = String.valueOf(dropLevel[DropStatus.DROPPED_MIDDLE.index]);
+            fpsLevel.dropped_high = String.valueOf(dropLevel[DropStatus.DROPPED_HIGH.index]);
+            fpsLevel.dropped_frozen = String.valueOf(dropLevel[DropStatus.DROPPED_FROZEN.index]);
 
             FPSData.FPSLevel fpsSum = new FPSData.FPSLevel();
-            fpsSum.dropped_best = dropSum[DropStatus.DROPPED_BEST.index];
-            fpsSum.dropped_normal = dropSum[DropStatus.DROPPED_NORMAL.index];
-            fpsSum.dropped_middle = dropSum[DropStatus.DROPPED_MIDDLE.index];
-            fpsSum.dropped_high = dropSum[DropStatus.DROPPED_HIGH.index];
-            fpsSum.dropped_frozen = dropSum[DropStatus.DROPPED_FROZEN.index];
+            fpsSum.dropped_best = String.valueOf(dropSum[DropStatus.DROPPED_BEST.index]);
+            fpsSum.dropped_normal = String.valueOf(dropSum[DropStatus.DROPPED_NORMAL.index]);
+            fpsSum.dropped_middle = String.valueOf(dropSum[DropStatus.DROPPED_MIDDLE.index]);
+            fpsSum.dropped_high = String.valueOf(dropSum[DropStatus.DROPPED_HIGH.index]);
+            fpsSum.dropped_frozen = String.valueOf(dropSum[DropStatus.DROPPED_FROZEN.index]);
 
             fpsData.dropLevel = fpsLevel;
             fpsData.dropSum = fpsSum;
-            fpsData.count = count;
-            fpsData.fps = fps;
-            fpsData.sumTime = sumTime / OFFSET_TO_MS;
-            fpsData.scene = scene;
+            fpsData.count = String.valueOf(count);
+            fpsData.fps = String.valueOf(fps);
+            fpsData.sumTime = String.valueOf(sumTime / OFFSET_TO_MS);
+            fpsData.page = scene;
             fpsData.action = "fps";
+            fpsData.statisticsTime = String.valueOf(System.currentTimeMillis());
 
-            Log.i(TAG, fpsData.toString());
-            // Log.i(TAG, resultObject.toString());
+            AgentLogManager.getAgentLog().info(fpsData.toString());
             sendReport(fpsData);
         } catch (Exception e) {
-            Log.e(TAG, "json error", e);
+            AgentLogManager.getAgentLog().error(String.format("json error , error :%s", e.getMessage()));
         }
-        Log.i(TAG, String.format("scene:%s count: %s average_fps:%s sumTime:%s ms", scene, count, fps, sumTime / OFFSET_TO_MS));
+        AgentLogManager.getAgentLog().info(String.format("scene:%s count: %s average_fps:%s sumTime:%s ms", scene, count, fps, sumTime / OFFSET_TO_MS));
 
     }
 

@@ -8,6 +8,7 @@ import android.view.Choreographer;
 import com.mqunar.qapm.core.ApplicationLifeObserver;
 import com.mqunar.qapm.listener.IFramBeat;
 import com.mqunar.qapm.listener.IFrameBeatListener;
+import com.mqunar.qapm.logging.AgentLogManager;
 import com.mqunar.qapm.utils.AndroidUtils;
 
 import java.util.LinkedList;
@@ -67,10 +68,10 @@ public class FrameBeat implements IFramBeat, Choreographer.FrameCallback, Applic
     @Override
     public void onCreate() {
         if (!AndroidUtils.isInMainThread(Thread.currentThread().getId())) {
-            Log.e(TAG, "[onCreate] FrameBeat must create on main thread");
+            AgentLogManager.getAgentLog().error( "[onCreate] FrameBeat must create on main thread");
             return;
         }
-        Log.i(TAG, "[onCreate] FrameBeat real onCreate!");
+        AgentLogManager.getAgentLog().info("[onCreate] FrameBeat real onCreate!");
         if (!isCreated) {
             isCreated = true;
             ApplicationLifeObserver.getInstance().register(this);
@@ -79,7 +80,7 @@ public class FrameBeat implements IFramBeat, Choreographer.FrameCallback, Applic
                 resume();
             }
         } else {
-            Log.w(TAG, "[onCreate] FrameBeat is created!");
+            AgentLogManager.getAgentLog().info("[onCreate] FrameBeat is created!");
         }
     }
 
@@ -100,7 +101,7 @@ public class FrameBeat implements IFramBeat, Choreographer.FrameCallback, Applic
             }
             ApplicationLifeObserver.getInstance().unregister(this);
         } else {
-            Log.w(TAG, "[onDestroy] FrameBeat is not created!");
+            AgentLogManager.getAgentLog().warning("[onDestroy] FrameBeat is not created!");
         }
 
     }
@@ -156,7 +157,7 @@ public class FrameBeat implements IFramBeat, Choreographer.FrameCallback, Applic
             if (jitterNanos >= FRAME_INTERVAL_NANOS) {
                 final long skippedFrames = jitterNanos / FRAME_INTERVAL_NANOS;
                 if (skippedFrames > 20) {
-                    Log.i(TAG, "Skipped " + skippedFrames + " frames!  "
+                    AgentLogManager.getAgentLog().info("Skipped " + skippedFrames + " frames!  "
                             + "The application may be doing too much work on its main thread.");
                 }
             }
@@ -168,19 +169,19 @@ public class FrameBeat implements IFramBeat, Choreographer.FrameCallback, Applic
 
     @Override
     public void onFront(Activity activity) {
-        Log.i(TAG, String.format("[onFront] isCreated:%s postFrameCallback", isCreated));
+        AgentLogManager.getAgentLog().info( String.format("[onFront] isCreated:%s postFrameCallback", isCreated));
         resume();
     }
 
     @Override
     public void onBackground(Activity activity) {
-        Log.i(TAG, String.format("[onBackground] isCreated:%s removeFrameCallback", isCreated));
+        AgentLogManager.getAgentLog().info( String.format("[onBackground] isCreated:%s removeFrameCallback", isCreated));
         pause();
     }
 
     @Override
     public void onChange(Activity activity, Fragment fragment) {
-        Log.i(TAG, String.format("[onChange] resetIndex mLastFrameNanos, current activity:%s", activity.getClass().getSimpleName()));
+        AgentLogManager.getAgentLog().info( String.format("[onChange] resetIndex mLastFrameNanos, current activity:%s", activity.getClass().getSimpleName()));
     }
 
     @Override

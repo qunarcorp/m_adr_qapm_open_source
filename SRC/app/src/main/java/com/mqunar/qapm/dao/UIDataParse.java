@@ -1,8 +1,5 @@
 package com.mqunar.qapm.dao;
 
-import android.util.Log;
-
-import com.mqunar.qapm.QAPM;
 import com.mqunar.qapm.domain.BaseData;
 import com.mqunar.qapm.domain.UIData;
 import com.mqunar.qapm.logging.AgentLog;
@@ -71,7 +68,7 @@ public class UIDataParse implements IDataParse{
                 return jsonObject;
             }
         } catch (JSONException e) {
-            Log.e(TAG, "convertNetworkData2Json failed : " + e.toString());
+            AgentLogManager.getAgentLog().error( "convertNetworkData2Json failed : " + e.toString());
         }
         return null;
     }

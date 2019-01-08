@@ -15,10 +15,8 @@ import android.os.Build;
 import android.os.Looper;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
-
-
+import com.mqunar.qapm.logging.AgentLogManager;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.lang.reflect.Field;
@@ -353,7 +351,7 @@ public class AndroidUtils {
     public static String getPageName(Context context) {
 
         if (context instanceof Application) {
-            Log.d(TAG, "Warning! getPageName but context is application!");
+            AgentLogManager.getAgentLog().info("Warning! getPageName but context is application!");
         }
 
         while (context instanceof ContextWrapper) {
@@ -403,7 +401,7 @@ public class AndroidUtils {
                 pkgName = getAtomName(clazz);
                 pageName = clazz.getSimpleName();
             } catch (Throwable t) {
-                Log.e(TAG, "found class crash");
+                AgentLogManager.getAgentLog().info( "found class crash");
             }
         }
 

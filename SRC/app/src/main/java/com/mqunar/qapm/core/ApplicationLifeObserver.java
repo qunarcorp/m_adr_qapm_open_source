@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.mqunar.qapm.logging.AgentLogManager;
 import com.mqunar.qapm.plugin.TracePlugin;
 
 import java.lang.ref.WeakReference;
@@ -102,7 +103,7 @@ public class ApplicationLifeObserver implements Application.ActivityLifecycleCal
                 if (wasBackground) {
                     Activity ac = mActivityWeakReference.get();
                     if (null == ac) {
-                        Log.w(TAG, "onFront ac is null!");
+                        AgentLogManager.getAgentLog().warning( "onFront ac is null!");
                         return;
                     }
                     for (IObserver listener : mObservers) {
@@ -131,10 +132,10 @@ public class ApplicationLifeObserver implements Application.ActivityLifecycleCal
                     mIsForeground = false;
                     Activity ac = mActivityWeakReference.get();
                     if (null == ac) {
-                        Log.w(TAG, "onBackground ac is null!");
+                        AgentLogManager.getAgentLog().info("onBackground ac is null!");
                         return;
                     }
-                    Log.w(TAG, "onBackground ");
+                    AgentLogManager.getAgentLog().info( "onBackground ");
                     for (IObserver listener : mObservers) {
                         listener.onBackground(ac);
                     }
@@ -159,7 +160,7 @@ public class ApplicationLifeObserver implements Application.ActivityLifecycleCal
 
     @Override
     public void onActivityStopped(Activity activity) {
-        Log.i(TAG,"onActivityStopped");
+        AgentLogManager.getAgentLog().info("onActivityStopped");
         for (IObserver listener : mObservers) {
             listener.onActivityStopped(activity);
         }
@@ -171,7 +172,7 @@ public class ApplicationLifeObserver implements Application.ActivityLifecycleCal
 
     @Override
     public void onActivityDestroyed(final Activity activity) {
-        Log.i(TAG,"onActivityDestroyed");
+        AgentLogManager.getAgentLog().info("onActivityDestroyed");
         if (getActivityHash(activity).equals(mCurActivityHash)) {
             mCurActivityHash = null;
         }

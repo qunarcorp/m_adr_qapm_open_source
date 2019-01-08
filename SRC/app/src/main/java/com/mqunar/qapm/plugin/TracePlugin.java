@@ -5,6 +5,8 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+
+import com.mqunar.qapm.logging.AgentLogManager;
 import com.mqunar.qapm.tracing.FPSTracer;
 import com.mqunar.qapm.tracing.FrameBeat;
 
@@ -19,9 +21,9 @@ public class TracePlugin extends Plugin {
     @Override
     public void init(Application app) {
         super.init(app);
-        Log.i(TAG, "trace plugin init");
+        AgentLogManager.getAgentLog().info("trace plugin init");
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            Log.e(TAG, String.format("[FrameBeat] API is low Build.VERSION_CODES.JELLY_BEAN(16), TracePlugin is not supported"));
+            AgentLogManager.getAgentLog().info(String.format("[FrameBeat] API is low Build.VERSION_CODES.JELLY_BEAN(16), TracePlugin is not supported"));
             unSupportPlugin();
             return;
         }
