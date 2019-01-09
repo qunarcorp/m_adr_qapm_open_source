@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.location.Location;
 import android.os.Build;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -12,6 +13,7 @@ import com.mqunar.qapm.logging.AgentLog;
 import com.mqunar.qapm.logging.AgentLogManager;
 import com.mqunar.qapm.utils.AndroidUtils;
 import com.mqunar.qapm.utils.IOUtils;
+import com.mqunar.qapm.utils.LocationUtils;
 import com.mqunar.qapm.utils.NetWorkUtils;
 
 import org.json.JSONArray;
@@ -23,6 +25,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 
 import qunar.lego.utils.FormPart;
 import qunar.lego.utils.HttpHeader;
@@ -174,7 +177,7 @@ public class QAPMSender implements ISender {
         try {
             String pkgName = context.getPackageName();
             String mon = AndroidUtils.carrierNameFromContext(context);
-            String loc = getLocation();
+            String loc = getLocation(context);
             PackageInfo packageInfo = context.getPackageManager().getPackageInfo(pkgName, 0);
             jobj.put("vid", !TextUtils.isEmpty(QAPMConstant.vid) ? QAPMConstant.vid : packageInfo.versionCode+"");
             jobj.put("pid", !TextUtils.isEmpty(QAPMConstant.pid) ? QAPMConstant.pid : AndroidUtils.UNKNOWN);
@@ -200,8 +203,9 @@ public class QAPMSender implements ISender {
         }
     }
 
-    private String getLocation() {//大客户端暂时先反射大客户端
+    private String getLocation(Context context) {
         try {
+            //大客户端暂时先反射大客户端
             Class<?> objClz = Class.forName("qunar.sdk.location.LocationFacade");
             Method method = objClz.getDeclaredMethod("getNewestCacheLocation");
             Location location = (Location) method.invoke(null);
@@ -211,7 +215,7 @@ public class QAPMSender implements ISender {
         } catch (Throwable e) {
 //            QLog.e(e);
         }
-        return "";
+        return LocationUtils.getLocation(context);
     }
 
 }
