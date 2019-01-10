@@ -3,6 +3,7 @@ package com.mqunar.qapm.pager;
 import android.view.View;
 
 import com.mqunar.qapm.domain.UIData;
+import com.mqunar.qapm.logging.AgentLogManager;
 import com.mqunar.qapm.tracing.WatchMan;
 
 /**
@@ -30,7 +31,7 @@ public class QLoadingView {
             return;
         }
         if(changedView.getClass().getName().equalsIgnoreCase("com.mqunar.framework.view.stateview.LoadingContainer")){
-            onVisibilityChangedNew(object, changedView, visibility);
+            onLoadingContainerVisibilityChanged(object, changedView, visibility);
             return;
         }
         if (visibility == View.VISIBLE) {
@@ -44,7 +45,7 @@ public class QLoadingView {
         }
     }
 
-    private static void onVisibilityChangedNew(Object object, View changedView, int visibility){
+    private static void onLoadingContainerVisibilityChanged(Object object, View changedView, int visibility){
         if (visibility == View.VISIBLE) {
             if(!WatchMan.sLoadingBeanMap.containsKey(object)){
                 recordLoading(object);
@@ -58,9 +59,9 @@ public class QLoadingView {
 
     private static void recordLoading(Object viewObject){
         UIData loadingBean = new UIData();
-        loadingBean.createTime = WatchMan.sActivityInfos.get(WatchMan.sActivityInfos.size() -1).createTime ;
-        loadingBean.resumeTime = WatchMan.sActivityInfos.get(WatchMan.sActivityInfos.size() -1).fristResumedTime ;
-        loadingBean.showTime = System.currentTimeMillis() ;
+        loadingBean.createTime = WatchMan.sActivityInfos.get(WatchMan.sActivityInfos.size() -1).createTime;
+        loadingBean.resumeTime = WatchMan.sActivityInfos.get(WatchMan.sActivityInfos.size() -1).firstResumedTime;
+        loadingBean.showTime = System.currentTimeMillis();
         loadingBean.page = WatchMan.sCurrentActivityName.replaceAll("_", "—");
         WatchMan.sLoadingBeanMap.put(viewObject, loadingBean);
     }
@@ -80,6 +81,8 @@ public class QLoadingView {
         }
         uiData.hiddenTime = System.currentTimeMillis();
         QLoadingReportHelper.newInstance().addReportMessage(uiData);
+        AgentLogManager.getAgentLog().info("new  loadingTime = (" + (uiData.hiddenTime - uiData.showTime) + ")  " +
+                "createTime = (" + (uiData.resumeTime - uiData.createTime) + ")");
         WatchMan.sLoadingBeanMap.remove(object);
     }
 

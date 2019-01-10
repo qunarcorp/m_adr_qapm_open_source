@@ -8,8 +8,6 @@ public interface IQAPM {
 
     void release();
 
-    String getCParam();
-
     /**
      * 设施网络发送器，并且发送器必须是实现了ISender接口的类
      */
