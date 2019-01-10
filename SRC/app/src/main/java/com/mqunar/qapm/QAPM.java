@@ -46,13 +46,12 @@ public class QAPM implements IQAPM {
     private ISender mSender;
     private WatchMan mWatchMan;
 
-    private String cParam;
     private Handler mWorkHandler;
     private HandlerThread mWorkLooper;
 
-    private QAPM(Context context, String cParam) {
-        mContext = getSafeContext(context);
-        this.cParam = cParam == null ? getCParam() : cParam;
+    private QAPM (Context context, String pid) {
+        mContext = getSafeContext(context) ;
+        setPid(pid);
         this.mWatchMan = new BackgroundTrace();
         initApplicationLifeObserver();
         mWorkLooper = new HandlerThread(QAPMConstant.THREAD_UPLOAD);
@@ -61,50 +60,41 @@ public class QAPM implements IQAPM {
         registerActivityLifecycleCallbacks();
     }
 
-    public static QAPM make(Context context, int pid) {
-        QAPMConstant.pid = pid + "";
-        return context != null ? make(context, null) : null;
+    public static QAPM make(Context context, String pid) {
+        if(pid == null || context == null){
+            throw new IllegalArgumentException("pid || context is not null");
+        }
+        return makeQAPM(context, pid);
     }
 
-    public static QAPM make(Context context, String cParam) {
+    private static QAPM makeQAPM(Context context, String pid) {
         if (sInstance == null) {
             synchronized (QAPM.class) {
                 if (sInstance == null) {
-                    sInstance = new QAPM(context, cParam);
+                    sInstance = new QAPM(context, pid);
                 }
             }
         }
         return sInstance;
     }
 
-    public static QAPM getInstance() {
-        return sInstance;
+    public QAPM setVid(String vid){
+        QAPMConstant.vid = vid;
+        return this;
     }
 
-    public String getCParam() {
-        if (mContext == null) {
-            return null;
-        }
-        if (cParam != null) {
-            return cParam;
-        }
-        JSONObject jobj = new JSONObject();
-        try {
-            String pkgName = mContext.getPackageName();
-            PackageInfo packageInfo = mContext.getPackageManager().getPackageInfo(pkgName, 0);
-            jobj.put("vid", packageInfo.versionCode);
-            jobj.put("pid", QAPMConstant.pid);
-            jobj.put("uid", AndroidUtils.getIMEI(mContext));
-            jobj.put("osVersion", Build.VERSION.RELEASE + "_" + Build.VERSION.SDK_INT);
-            jobj.put("model", SystemUtils.getSystemModel());
-            String mon = AndroidUtils.carrierNameFromContext(mContext);
-            jobj.put("mno", TextUtils.isEmpty(mon) ? AndroidUtils.UNKNOWN : mon);
-            jobj.put("loc", TextUtils.isEmpty(getLocation()) ? AndroidUtils.UNKNOWN : getLocation());
-            jobj.put("key", String.valueOf(System.currentTimeMillis()));
-            jobj.put("ext", ""); // 该字段先不支持
-        } catch (Exception ignore) {
-        }
-        return jobj.toString();
+    public QAPM setPid(String pid){
+        QAPMConstant.pid = pid;
+        return this;
+    }
+
+    public QAPM setCid(String cid){
+        QAPMConstant.cid = cid;
+        return this;
+    }
+
+    public static QAPM getInstance(){
+        return sInstance;
     }
 
     @Override
@@ -131,13 +121,13 @@ public class QAPM implements IQAPM {
     }
 
     @Override
-    public ISender getSender() {
+    public ISender getSender(){
         if (mSender == null) {
             String requestId = (String) ReflectUtils.invokeStaticMethod("com.mqunar.qav.uelog.QAVLog", "getRequestId", null, null);
-            if (isRelease) {
-                mSender = new QAPMSender(QAPMConstant.HOST_URL, "", getCParam(), requestId);
+            if(isRelease){
+                mSender = new QAPMSender(QAPMConstant.HOST_URL, "", requestId);
             } else {
-                mSender = new QAPMSender(QAPMConstant.HOST_URL_BETA, QAPMConstant.PITCHER_URL, getCParam(), requestId);
+                mSender = new QAPMSender(QAPMConstant.HOST_URL_BETA, QAPMConstant.PITCHER_URL, requestId);
             }
         }
         return mSender;
@@ -151,7 +141,7 @@ public class QAPM implements IQAPM {
 
 
     @Override
-    public void release() {
+    public void release(){
         if (mWorkLooper != null) {
             mWorkLooper.quit();
         }
@@ -159,11 +149,8 @@ public class QAPM implements IQAPM {
     }
 
     private void registerActivityLifecycleCallbacks() {
-        if (mContext != null && mContext instanceof Application) {
-            if (mWatchMan != null) {
-                ((Application) mContext).registerActivityLifecycleCallbacks(mWatchMan);
-            }
-
+        if(mContext != null && mContext instanceof Application && mWatchMan != null){
+            ((Application) mContext).registerActivityLifecycleCallbacks(mWatchMan);
         }
     }
 
@@ -198,9 +185,9 @@ public class QAPM implements IQAPM {
         }
     }
 
-    public static String getSaveDataFile(String name) {
+    public static String getSaveDataFile(String name){
         String path = IOUtils.getUploadDir(mContext);
-        if (path == null) {
+        if(path == null){
             return null;
         }
         File destFile = new File(path, name);
@@ -225,10 +212,10 @@ public class QAPM implements IQAPM {
                     Storage.newStorage(mContext).popData();
                 }
                 String path = IOUtils.getUploadDir(mContext);
-                if (path != null) {
+                if(path != null){
                     String[] tempFileName = new File(path).list();
                     if (tempFileName != null && tempFileName.length > 0) {
-                        getSender().send(mContext, path, cParam);
+                        getSender().send(mContext, path);
                     }
                 }
             }
@@ -241,19 +228,5 @@ public class QAPM implements IQAPM {
 
     public static String getActiveNetworkWanType() {
         return AndroidUtils.wanType(mContext);
-    }
-
-    private String getLocation() {//大客户端暂时先反射大客户端
-        try {
-            Class<?> objClz = Class.forName("qunar.sdk.location.LocationFacade");
-            Method method = objClz.getDeclaredMethod("getNewestCacheLocation");
-            Location location = (Location) method.invoke(null);
-            if (location != null) {
-                return location.getLongitude() + "," + location.getLatitude();
-            }
-        } catch (Throwable e) {
-//            QLog.e(e);
-        }
-        return "";
     }
 }

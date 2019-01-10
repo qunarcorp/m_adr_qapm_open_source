@@ -61,7 +61,7 @@ public class MainActivity extends Activity {
                 return super.getView(position, convertView, parent);
             }
         });
-        QAPM.getInstance().getCParam();
+       // QAPM.getInstance().getCParam();
     }
 
     @Override

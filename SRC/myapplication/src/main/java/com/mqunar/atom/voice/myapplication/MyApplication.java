@@ -8,7 +8,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        QAPM.make(this, 10010);
+        QAPM.make(this, "10010");
         QAPM.getInstance().withLogEnabled(true);
 
     }
