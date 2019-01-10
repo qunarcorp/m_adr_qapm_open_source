@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/qitmac000018/AndroidStudioProjects/qapm/SRC/myapplication/build/intermediates/exploded-aar/SRC/app/unspecified/jars/classes.jar"
+        jumboMode="false"
+        revision="28.0.1"
+        sha1="86ae0b49c0ec1a5578e20442973542cc3a24d041">
+        <dex dex="/Users/qitmac000018/AndroidStudioProjects/qapm/SRC/myapplication/build/intermediates/pre-dexed/debug/SRC-app-unspecified_85c0fc9594022ed880229d20aec66d7810e686dd.jar" />
+    </item>
+
+</items>
