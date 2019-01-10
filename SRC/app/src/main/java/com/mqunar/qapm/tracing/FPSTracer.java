@@ -28,10 +28,6 @@ public class FPSTracer extends BaseTracer implements LazyScheduler.ILazyTask, Vi
     private static final int FACTOR = QAPMConstant.TIME_MILLIS_TO_NANO / OFFSET_TO_MS;
     private boolean isDrawing = false;
     private boolean isInvalid = false;
-    private HashMap<String, Integer> mSceneToSceneIdMap;
-    private SparseArray<String> mSceneIdToSceneMap;
-    private LinkedList<Integer> mFrameDataList;
-    private SparseArray<LinkedList<Integer>> mPendingReportSet;
     private HashMap<String, LinkedList<Integer>> mReportMap;
     private LazyScheduler mLazyScheduler;
 
@@ -42,10 +38,6 @@ public class FPSTracer extends BaseTracer implements LazyScheduler.ILazyTask, Vi
     @Override
     public void onCreate() {
         super.onCreate();
-        this.mFrameDataList = new LinkedList<>();
-        this.mSceneToSceneIdMap = new HashMap<>();
-        this.mSceneIdToSceneMap = new SparseArray<>();
-        this.mPendingReportSet = new SparseArray<>();
         this.mLazyScheduler = new LazyScheduler(QAPMHandlerThread.getDefaultHandlerThread(), 0);
         if (ApplicationLifeObserver.getInstance().isForeground()) {
             onFront(null);
@@ -86,22 +78,7 @@ public class FPSTracer extends BaseTracer implements LazyScheduler.ILazyTask, Vi
     public void onDestroy() {
         super.onDestroy();
 
-        if (null != mSceneToSceneIdMap) {
-            mSceneToSceneIdMap.clear();
-            mSceneToSceneIdMap = null;
-        }
-        if (null != mSceneIdToSceneMap) {
-            mSceneIdToSceneMap.clear();
-            mSceneIdToSceneMap = null;
-        }
-        if (null != mFrameDataList) {
-            mFrameDataList.clear();
-            mFrameDataList = null;
-        }
-        if (null != mPendingReportSet) {
-            mPendingReportSet.clear();
-            mPendingReportSet = null;
-        }
+
     }
 
     @Override

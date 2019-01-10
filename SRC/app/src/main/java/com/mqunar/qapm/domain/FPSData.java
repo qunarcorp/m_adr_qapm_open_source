@@ -7,7 +7,7 @@ import org.json.JSONObject;
 /**
  * 帧率统计
  */
-public class FPSData implements BaseData {
+public class FPSData extends BaseAPMData {
     private static final long serialVersionUID = 1L;
     public String action; // hyNet/rnNet/iosNet/adrNet
     public String page;//当前场景
