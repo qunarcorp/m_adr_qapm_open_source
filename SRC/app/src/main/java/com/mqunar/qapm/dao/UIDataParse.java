@@ -1,8 +1,6 @@
 package com.mqunar.qapm.dao;
 
-import android.util.Log;
-
-import com.mqunar.qapm.QAPM;
+import com.mqunar.qapm.QAPMConstant;
 import com.mqunar.qapm.domain.BaseData;
 import com.mqunar.qapm.domain.UIData;
 import com.mqunar.qapm.logging.AgentLog;
@@ -60,7 +58,7 @@ public class UIDataParse implements IDataParse{
             if(baseData instanceof UIData){
                 UIData data = (UIData) baseData;
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("action", data.action);
+                jsonObject.put("action", QAPMConstant.LOG_UI_TYPE);
                 jsonObject.put("page", data.page);
                 jsonObject.put("createTime", data.createTime != ILLEGAL_DATA ? data.createTime : AndroidUtils.UNKNOWN);
                 jsonObject.put("resumeTime", data.resumeTime != ILLEGAL_DATA ? data.resumeTime : AndroidUtils.UNKNOWN);
@@ -71,7 +69,7 @@ public class UIDataParse implements IDataParse{
                 return jsonObject;
             }
         } catch (JSONException e) {
-            Log.e(TAG, "convertNetworkData2Json failed : " + e.toString());
+            log.error("convertNetworkData2Json failed : " + e.toString());
         }
         return null;
     }

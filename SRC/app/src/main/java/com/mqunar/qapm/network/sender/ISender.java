@@ -7,5 +7,7 @@ import java.util.Map;
 
 public interface ISender {
 
-    void send(Context context, String filePath, String cParam);
+    void send(Context context, String filePath);
+
+    String getCParam(Context context);
 }
