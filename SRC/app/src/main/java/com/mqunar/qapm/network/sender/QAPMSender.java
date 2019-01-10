@@ -144,8 +144,7 @@ public class QAPMSender implements ISender {
             new JSONArray(content);
             return true;
         }catch(Exception e){
-            // TODO 这个后续得删掉
-            Log.i("suansuan", content);
+            log.error("send apm cParam failed :" + content);
             return false;
         }
     }
