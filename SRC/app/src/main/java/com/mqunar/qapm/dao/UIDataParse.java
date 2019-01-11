@@ -60,10 +60,10 @@ public class UIDataParse implements IDataParse{
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("action", QAPMConstant.LOG_UI_TYPE);
                 jsonObject.put("page", data.page);
-                jsonObject.put("createTime", data.createTime != ILLEGAL_DATA ? data.createTime : AndroidUtils.UNKNOWN);
-                jsonObject.put("resumeTime", data.resumeTime != ILLEGAL_DATA ? data.resumeTime : AndroidUtils.UNKNOWN);
-                jsonObject.put("hiddenTime", data.hiddenTime != ILLEGAL_DATA ? data.hiddenTime : AndroidUtils.UNKNOWN);
-                jsonObject.put("showTime", data.showTime != ILLEGAL_DATA ? data.showTime : AndroidUtils.UNKNOWN);
+                jsonObject.put("createTime", data.createTime != ILLEGAL_DATA ? data.createTime + "" : AndroidUtils.UNKNOWN);
+                jsonObject.put("resumeTime", data.resumeTime != ILLEGAL_DATA ? data.resumeTime + "" : AndroidUtils.UNKNOWN);
+                jsonObject.put("hiddenTime", data.hiddenTime != ILLEGAL_DATA ? data.hiddenTime + "" : AndroidUtils.UNKNOWN);
+                jsonObject.put("showTime", data.showTime != ILLEGAL_DATA ? data.showTime + "": AndroidUtils.UNKNOWN);
                 jsonObject.put("status", data.status);
                 jsonObject.put("netType", data.netType);
                 return jsonObject;
