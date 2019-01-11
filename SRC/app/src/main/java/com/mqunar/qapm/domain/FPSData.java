@@ -37,13 +37,14 @@ public class FPSData extends BaseAPMData {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("action", this.action);
-            jsonObject.put("scene", this.page);
+            jsonObject.put("page", this.page);
             jsonObject.put("dropLevel", this.dropLevel.toJSONObject());
             jsonObject.put("dropSum", this.dropSum.toJSONObject());
             jsonObject.put("fps", this.fps);
             jsonObject.put("count", this.count);
             jsonObject.put("sumTime", this.sumTime);
             jsonObject.put("logTime", this.statisticsTime);
+            jsonObject.put("extra",this.extra);
             return jsonObject;
 
         } catch (JSONException e) {
