@@ -32,6 +32,15 @@ public class NetworkData implements BaseData {
     public String netStatus; // 请求成功或者失败;“success”( 络错误码在100~399); “error”(其它情 况);
     public String topPage; // 顶层页面，
 
+    public static final String ERROR_TYPE_BAD_URL = "badurl";//错误的url
+    public static final String ERROR_TYPE_TIMEOUT = "timeout";//请求超时
+    public static final String ERROR_TYPE_UNCONNECT = "unconnect";//无网或者没有网络权限
+    public static final String ERROR_TYPE_HOST_ERR = "hostErr";//服务器错误，如请求被拒
+    public static final String ERROR_TYPE_IO_ERR = "ioErr";//io错误
+    public static final String ERROR_TYPE_SSL_ERR = "sslErr";//ssl错误
+
+    public String errorType;//网络错误类型
+
     public HashMap<String, String> headers = new HashMap<>();//过滤后的header
 
 
