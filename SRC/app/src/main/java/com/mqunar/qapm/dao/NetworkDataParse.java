@@ -62,7 +62,6 @@ public class NetworkDataParse implements IDataParse{
                 jsonObject.put("netType", data.netType);
                 jsonObject.put("netStatus", data.netStatus);
                 jsonObject.put("topPage", data.topPage);
-                jsonObject.put("errorType",data.errorType);
                 // 添加header
                 JSONObject headerJsonObject = new JSONObject();
                 if (data.headers != null && data.headers.size() > 0) {
@@ -96,7 +95,6 @@ public class NetworkDataParse implements IDataParse{
         networkData.netType = data.get("netType") != null ? data.get("netType") : AndroidUtils.UNKNOWN;
         networkData.netStatus = data.get("netStatus") != null ? data.get("netStatus") : AndroidUtils.UNKNOWN;
         networkData.topPage = data.get("topPage") != null ? data.get("topPage") : AndroidUtils.UNKNOWN;
-        networkData.errorType = data.get("errorType") != null ?data.get("errorType") : AndroidUtils.UNKNOWN;
         String headers = data.get("headers") != null ? data.get("headers") : AndroidUtils.UNKNOWN;
 
        if(headers != null){

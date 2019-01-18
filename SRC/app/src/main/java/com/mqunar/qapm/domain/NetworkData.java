@@ -39,7 +39,6 @@ public class NetworkData implements BaseData {
     public static final String ERROR_TYPE_IO_ERR = "ioErr";//io错误
     public static final String ERROR_TYPE_SSL_ERR = "sslErr";//ssl错误
 
-    public String errorType;//网络错误类型
 
     public HashMap<String, String> headers = new HashMap<>();//过滤后的header
 
