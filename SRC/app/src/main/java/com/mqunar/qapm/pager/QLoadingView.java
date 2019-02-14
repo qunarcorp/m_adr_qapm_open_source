@@ -91,14 +91,15 @@ public class QLoadingView {
         if(!isLoadingContainer && uiData.showTime - uiData.resumeTime > 5000){
             return;
         }
-        if(WatchMan.sOnBackgroundTime != -1 && WatchMan.sOnBackgroundTime > uiData.createTime
-                && WatchMan.sOnBackgroundTime < System.currentTimeMillis()){
-            // 代表，Activity 创建 - LoadingView 的 隐藏途中，用户将当前App有过切入后台的情况出现，所以此条数据存在不准确的情况，应该废弃掉
-            return;
+        long bTime = BackgroundTrace.getBackgroundTime();
+        long duraTime = (System.nanoTime() - uiData.showTimeInNano) / MS_NS_UNIT;
+        uiData.hiddenTime = uiData.showTime + duraTime;
+        if(bTime != -1 && bTime > uiData.showTime && bTime < uiData.hiddenTime){
+            return; // 代表，Activity 创建 - LoadingView 的 隐藏途中，用户将当前App有过切入后台的情况出现，所以此条数据存在不准确的情况，应该废弃掉
         }
-        uiData.hiddenTime = System.currentTimeMillis();
+
         QLoadingReportHelper.newInstance().addReportMessage(uiData);
-        AgentLogManager.getAgentLog().info("new  loadingTime = (" + (uiData.hiddenTime - uiData.showTime) + ")  " +
+        AgentLogManager.getAgentLog().info("object ="+object.toString()+",showTime = "+uiData.showTime+",loading duraTime = ("+duraTime+")ms, new  loadingTime = (" + (uiData.hiddenTime - uiData.showTime) + ")  " +
                 "createTime = (" + (uiData.resumeTime - uiData.createTime) + ")");
         WatchMan.sLoadingBeanMap.remove(object);
     }

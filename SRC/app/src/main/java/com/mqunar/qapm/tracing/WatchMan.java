@@ -30,8 +30,6 @@ public abstract class WatchMan implements Application.ActivityLifecycleCallbacks
     private WeakHashMap<Activity, Handler> mWeakHandlerMap;
     public static WeakHashMap<Object, UIData> sLoadingBeanMap = new WeakHashMap<>();
     public static List<ActivityInfo> sActivityInfos = new LinkedList<>();
-    public static long sOnBackgroundTime = -1;
-
     private boolean mIsFirstActivityStart = true;
     private boolean mIsFirstActivityStop = true;
     private boolean isBackToDesktop = false;
