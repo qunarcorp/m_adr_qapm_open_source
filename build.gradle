@@ -1,7 +1,4 @@
-apply plugin: 'com.android.library'
-apply from: 'http://gitlab.corp.qunar.com/m_adr_llama_config/m_adr_gradle_preset/raw/release/preset.gradle'
-apply from: 'http://gitlab.corp.qunar.com/m_adr_llama_config/m_adr_lib_version/raw/release/latest.properties'
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
 
 buildscript {
     repositories {
