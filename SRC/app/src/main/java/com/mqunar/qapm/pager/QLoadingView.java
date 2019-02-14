@@ -28,7 +28,7 @@ import static com.mqunar.qapm.domain.UIData.MS_NS_UNIT;
 public class QLoadingView {
 
     public static void onVisibilityChanged(Object object, View changedView, int visibility) {
-        if(object == null || !object.getClass().getName().equalsIgnoreCase("com.mqunar.framework.view.LoadingView")){
+        if(object == null || changedView == null || !object.getClass().getName().equalsIgnoreCase("com.mqunar.framework.view.LoadingView")){
             return;
         }
         StringBuilder builder = new StringBuilder("QLoadingView.onVisibilityChanged, ");
