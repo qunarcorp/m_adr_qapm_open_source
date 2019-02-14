@@ -1,0 +1,34 @@
+apply plugin: 'com.android.application'
+apply from: 'http://gitlab.corp.qunar.com/m_adr_llama_config/m_adr_lib_version/raw/release/latest.properties'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.qunar.moudle"
+        minSdkVersion 19
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+        ndk {
+            abiFilters "armeabi"
+        }
+    }
+    dexOptions {
+        jumboMode true
+    }
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "com.qunar.llama:fastLocalDebug:${v_comQunarLlamaFastLocalDebug}"
+}
