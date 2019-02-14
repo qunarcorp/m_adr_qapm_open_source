@@ -2,9 +2,13 @@ package com.mqunar.qapm.pager;
 
 import android.view.View;
 
+import com.mqunar.qapm.domain.ActivityInfo;
 import com.mqunar.qapm.domain.UIData;
 import com.mqunar.qapm.logging.AgentLogManager;
+import com.mqunar.qapm.tracing.BackgroundTrace;
 import com.mqunar.qapm.tracing.WatchMan;
+
+import static com.mqunar.qapm.domain.UIData.MS_NS_UNIT;
 
 /**
  * Created by dhc on 2018/4/27.
@@ -24,6 +28,13 @@ import com.mqunar.qapm.tracing.WatchMan;
 public class QLoadingView {
 
     public static void onVisibilityChanged(Object object, View changedView, int visibility) {
+        if(object == null || !object.getClass().getName().equalsIgnoreCase("com.mqunar.framework.view.LoadingView")){
+            return;
+        }
+        StringBuilder builder = new StringBuilder("QLoadingView.onVisibilityChanged, ");
+        builder.append("object = ").append(object==null?"null!!":object.toString()).append(",changedView = ").append(changedView==null?"null!!":changedView.toString())
+                .append(",visibility = ").append(visibility==View.VISIBLE?"View.VISIBLE":(visibility==View.INVISIBLE?"View.INVISIBLE":"View.GONE"));
+         AgentLogManager.getAgentLog().info(builder.toString());
         //HyWebActivity会被重复使用
         if (WatchMan.sCurrentActivityName.contains("HyWebActivity") ||
                 changedView.getClass().getName().equalsIgnoreCase("com.android.internal.policy.DecorView")) {
@@ -58,10 +69,16 @@ public class QLoadingView {
     }
 
     private static void recordLoading(Object viewObject){
+        if(!BackgroundTrace.appIsForeground()){
+            return;
+        }
         UIData loadingBean = new UIData();
-        loadingBean.createTime = WatchMan.sActivityInfos.get(WatchMan.sActivityInfos.size() -1).createTime;
-        loadingBean.resumeTime = WatchMan.sActivityInfos.get(WatchMan.sActivityInfos.size() -1).firstResumedTime;
+        ActivityInfo info = WatchMan.sActivityInfos.get(WatchMan.sActivityInfos.size() -1);
+        loadingBean.createTime = info.createTime;
+        long duraTime = (info.firstResumedTimeInNano - info.creatTimeInNano) / MS_NS_UNIT;//转换成毫秒值
+        loadingBean.resumeTime =  loadingBean.createTime + duraTime;
         loadingBean.showTime = System.currentTimeMillis();
+        loadingBean.showTimeInNano = System.nanoTime();
         loadingBean.page = WatchMan.sCurrentActivityName.replaceAll("_", "—");
         WatchMan.sLoadingBeanMap.put(viewObject, loadingBean);
     }

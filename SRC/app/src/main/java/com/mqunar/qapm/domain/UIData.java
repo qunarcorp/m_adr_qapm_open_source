@@ -5,6 +5,7 @@ package com.mqunar.qapm.domain;
  * Created by pengchengpc.liu on 2018/11/22.
  */
 public class UIData implements BaseData{
+    public static final long MS_NS_UNIT = 1000000l;
 
     public static final String SUCCESS = "success";
     public static final String ERROR = "error";
@@ -19,6 +20,7 @@ public class UIData implements BaseData{
     public long createTime; // 创建Activity时间
     public long resumeTime; // 页面创建完成时间(即将展示)
     public long hiddenTime; // 页面loading完成时间
+    public long showTimeInNano;
     public long showTime; // 页面loading展示时间
 
     @Override
