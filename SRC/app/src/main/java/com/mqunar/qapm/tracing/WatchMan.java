@@ -159,12 +159,14 @@ public abstract class WatchMan implements Application.ActivityLifecycleCallbacks
         ActivityInfo activityInfo = new ActivityInfo();
         activityInfo.activityName = activityName;
         activityInfo.createTime = System.currentTimeMillis();
+        activityInfo.creatTimeInNano = System.nanoTime();
         sActivityInfos.add(activityInfo);
     }
 
     private void recordResumedTime(String activityName){
         for (ActivityInfo activityInfo : sActivityInfos){
             if(activityInfo.activityName.equalsIgnoreCase(activityName) && activityInfo.isFirstResumed){
+                activityInfo.firstResumedTimeInNano = System.nanoTime();
                 activityInfo.firstResumedTime = System.currentTimeMillis();
                 activityInfo.isFirstResumed = false;
             }
