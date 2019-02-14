@@ -1,0 +1,48 @@
+apply plugin: 'com.android.library'
+apply from: 'http://gitlab.corp.qunar.com/m_adr_llama_config/m_adr_gradle_preset/raw/release/preset.gradle'
+apply from: 'http://gitlab.corp.qunar.com/m_adr_llama_config/m_adr_lib_version/raw/release/latest.properties'
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        maven {
+            url "http://l-nexus1.wap.cn8.qunar.com:8081/nexus/content/groups/public"
+        }
+        maven {
+            url "http://svn.corp.qunar.com:8081/nexus/content/groups/public"
+        }
+        maven  {
+            url "http://repo1.maven.org/maven2"
+        }
+        mavenCentral()
+        jcenter {
+            url "http://jcenter.bintray.com/"
+        }
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.2.0'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        maven {
+            url "http://l-nexus1.wap.cn8.qunar.com:8081/nexus/content/groups/public"
+        }
+        maven {
+            url "http://svn.corp.qunar.com:8081/nexus/content/groups/public"
+        }
+        maven  {
+            url "http://repo1.maven.org/maven2"
+        }
+        mavenCentral()
+        jcenter {
+            url "http://jcenter.bintray.com/"
+        }
+        jcenter()
+    }
+}

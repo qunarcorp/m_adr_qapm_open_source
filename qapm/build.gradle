@@ -1,0 +1,40 @@
+apply plugin: 'com.android.library'
+apply from: 'http://gitlab.corp.qunar.com/m_adr_llama_config/m_adr_gradle_preset/raw/release/preset.gradle'
+apply from: 'http://gitlab.corp.qunar.com/m_adr_llama_config/m_adr_lib_version/raw/release/latest.properties'
+
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        consumerProguardFiles 'proguard-rules.pro'
+        minSdkVersion 19
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+//定义一个函数，target是生成jar包的文件名，classDir是class文件所在的文件夹
+def makeJar(String target,String classDir){
+    exec{
+        executable "jar"   //调用jar
+        args "cvf",target
+        args "-C", classDir
+        args "","."
+    }
+}
+
+//新建一个task,名为buildLib,依赖build(build是一个自带的task)
+task genJar(dependsOn:['build'])<< {
+    makeJar("qapm_android.jar","build/intermediates/classes/release")
+}
+
+dependencies {
+    compileOnly "com.qunar.llama:goblin:${v_comQunarLlamaGoblin}"
+}
