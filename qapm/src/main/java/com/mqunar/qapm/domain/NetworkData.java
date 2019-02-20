@@ -34,7 +34,7 @@ public class NetworkData implements BaseData {
     public String netType; // 发送网络请求时的网络类型，可选值为：“2G”、“3G”、“4G”、“Wifi”，“Cellular”，“Unknow”
     public String netStatus; // 请求成功或者失败;“success”( 络错误码在100~399); “error”(其它情 况);
     public String topPage; // 顶层页面，
-    public Str;//网络错误类型
+    public String errorType;//网络错误类型
 
 
     public static final String ERROR_TYPE_BAD_URL = "badurl";//错误的url
