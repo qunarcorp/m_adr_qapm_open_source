@@ -40,12 +40,16 @@ public final class TransactionState {
     private long bytesReceived;
     private long startTime;
     private long endTime;
-
+    private long startTimeInNano;
+    private long endTimeInNano;
     private HashMap<String,String> headers;
+    public String errorType;//网络错误类型
 
     public TransactionState() {
         this.state = State.READY;
         startTime = !BackgroundTrace.appIsForeground() ? BACKGROUND_START_TIME : System.currentTimeMillis();
+        startTimeInNano = !BackgroundTrace.appIsForeground() ? BACKGROUND_START_TIME : System.nanoTime();
+//        TraceMachine.enterNetworkSegment("External/unknownhost");
     }
 
     public void setCarrier(String carrier) {
@@ -180,6 +184,9 @@ public final class TransactionState {
             network.hf = errMsg; // http发生异常的原因,可选
             network.netType = wanType; // 发送网络请求时的网络类型，可选值为：“2G”、“3G”、“4G”、“Wifi”，“Cellular”，“Unknow”
             network.headers = headers; // 请求头--会做一些过滤
+            network.startTimeInNano = startTimeInNano;
+            network.endTimeInNano = endTimeInNano;
+            network.errorType = errorType;
             return network;
         }
     }

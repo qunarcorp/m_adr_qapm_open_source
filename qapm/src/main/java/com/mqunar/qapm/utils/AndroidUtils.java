@@ -31,6 +31,7 @@ public class AndroidUtils {
     private static final String ANDROID = "Android";
     private static final String WIFI = "wifi";
 
+    public static final String TIMEOUT = "timeout";//请求超时
     public static final String UNKNOWN = "Unknown";
     public static final String UNCONNECT = "unconnect";
 

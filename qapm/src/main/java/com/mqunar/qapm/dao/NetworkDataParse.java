@@ -62,6 +62,10 @@ public class NetworkDataParse implements IDataParse{
                 jsonObject.put("netType", data.netType);
                 jsonObject.put("netStatus", data.netStatus);
                 jsonObject.put("topPage", data.topPage);
+
+                jsonObject.put("startTimeInNano", data.startTimeInNano + "");
+                jsonObject.put("endTimeInNano", data.endTimeInNano + "");
+                jsonObject.put("errorType", data.errorType);
                 // 添加header
                 JSONObject headerJsonObject = new JSONObject();
                 if (data.headers != null && data.headers.size() > 0) {
@@ -95,8 +99,17 @@ public class NetworkDataParse implements IDataParse{
         networkData.netType = data.get("netType") != null ? data.get("netType") : AndroidUtils.UNKNOWN;
         networkData.netStatus = data.get("netStatus") != null ? data.get("netStatus") : AndroidUtils.UNKNOWN;
         networkData.topPage = data.get("topPage") != null ? data.get("topPage") : AndroidUtils.UNKNOWN;
-        String headers = data.get("headers") != null ? data.get("headers") : AndroidUtils.UNKNOWN;
 
+        /**
+         * jsonObject.put("", data.startTimeInNano + "");
+         jsonObject.put("endTimeInNano", data.endTimeInNano + "");
+         jsonObject.put("errorType", data.errorType);
+         */
+//        networkData.startTimeInNano = data.get("startTimeInNano") != null ? Long.parseLong(data.get("startTimeInNano")) :
+// TODO   这里需要重新约定一下;
+
+
+        String headers = data.get("headers") != null ? data.get("headers") : AndroidUtils.UNKNOWN;
        if(headers != null){
             try {
                 HashMap<String, String> headersMap = new HashMap<>();

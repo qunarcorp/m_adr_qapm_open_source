@@ -20,6 +20,9 @@ public class NetworkData implements BaseData {
     private static final long serialVersionUID = 1L;
     private static final int BACKGROUND_START_TIME = -1;
 
+    public long startTimeInNano;
+    public long endTimeInNano;
+
     public String action; // hyNet/rnNet/iosNet/adrNet
     public String reqUrl; //请求的url地址
     public String startTime; // 网络请求开始时的时间戳,精确到毫秒
@@ -31,6 +34,8 @@ public class NetworkData implements BaseData {
     public String netType; // 发送网络请求时的网络类型，可选值为：“2G”、“3G”、“4G”、“Wifi”，“Cellular”，“Unknow”
     public String netStatus; // 请求成功或者失败;“success”( 络错误码在100~399); “error”(其它情 况);
     public String topPage; // 顶层页面，
+    public Str;//网络错误类型
+
 
     public static final String ERROR_TYPE_BAD_URL = "badurl";//错误的url
     public static final String ERROR_TYPE_TIMEOUT = "timeout";//请求超时

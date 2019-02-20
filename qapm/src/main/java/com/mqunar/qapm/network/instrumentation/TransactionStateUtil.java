@@ -12,6 +12,7 @@ import com.mqunar.qapm.logging.AgentLog;
 import com.mqunar.qapm.logging.AgentLogManager;
 import com.mqunar.qapm.network.instrumentation.httpclient.HttpRequestEntityImpl;
 import com.mqunar.qapm.network.instrumentation.httpclient.HttpResponseEntityImpl;
+import com.mqunar.qapm.utils.AndroidUtils;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntityEnclosingRequest;
@@ -20,9 +21,13 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.RequestLine;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.HttpHostConnectException;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -34,14 +39,16 @@ import java.util.Map;
 public class TransactionStateUtil {
     private static final AgentLog log = AgentLogManager.getAgentLog();
     private static final String CONTENT_LENGTH_HEADER = "Content-Length";
-
     public static final String CONTENT_TYPE_HEADER = "Content-Type";
     public static final String APP_DATA_HEADER = "X-NewNecro-App-Data";
     public static final String CROSS_PROCESS_ID_HEADER = "X-NewNecro-ID";
+
     public static final String REQUEST_HEADER_HOST = "Host";
     public static final String REQUEST_HEADER_PITCHER_TYPE = "Pitcher-Type";
 
-    public TransactionStateUtil() {}
+
+    public TransactionStateUtil() {
+    }
 
     private static void inspectAndInstrument(TransactionState transactionState, String url, String httpMethod) {
         log.debug("inspectAndInstrument url " + url);
@@ -137,7 +144,7 @@ public class TransactionStateUtil {
 
     private static final String REQUEST_HEADER_CONTENT_TYPE = "Content-Type";
     private static final String REQUEST_HEADER_X_CLIENTENCODING = "X-ClientEncoding";
-//    private static final String REQUEST_HEADER_HOST= "Host";
+    //    private static final String REQUEST_HEADER_HOST= "Host";
     private static final String REQUEST_HEADER_CONNECTION = "Connection";
     private static final String REQUEST_HEADER_ACCEPT_ENCODING = "Accept-Encoding";
     private static final String REQUEST_HEADER_CONTENT_LENGTH = "Content-Length";
@@ -242,6 +249,37 @@ public class TransactionStateUtil {
     public static void setErrorCodeFromException(TransactionState transactionState, Exception e) {
         log.error("TransactionStateUtil: Attempting to convert network exception " + e.getClass().getName() + " to error code.");
         transactionState.setErrorMsg(e.getMessage());
+        setErrorType(transactionState,e);
+    }
+
+    /**
+     * 通过exception确定网络错误类型
+     * @param transactionState
+     * @param e
+     */
+    private static void setErrorType(TransactionState transactionState,Exception e){
+        if(transactionState == null){
+            return;
+        }
+        //badurl timeout unconnect hostErr ioErr sslErr
+        if(e == null){
+            transactionState.errorType = AndroidUtils.UNKNOWN;
+        }else{
+            if(e instanceof  SecurityException || e instanceof UnknownHostException
+                    || e instanceof IllegalStateException || e instanceof HttpHostConnectException){
+                transactionState.errorType = AndroidUtils.UNCONNECT;
+            }else if(e instanceof ConnectException){
+                if(e.getMessage().contains("TIMEDOUT") || e.getMessage().contains("timed out")){
+                    transactionState.errorType = AndroidUtils.TIMEOUT;
+                }else if(e.getMessage().contains("ECONNREFUSED") || e.getMessage().contains("Connection refused")){
+                    transactionState.errorType = AndroidUtils.UNCONNECT;
+                }
+            }else if(e instanceof SocketTimeoutException){
+                transactionState.errorType = AndroidUtils.TIMEOUT;
+            }else{
+                transactionState.errorType = AndroidUtils.UNKNOWN;
+            }
+        }
     }
 
     private static void addTransactionAndErrorData(TransactionState transactionState, HttpResponse response) {

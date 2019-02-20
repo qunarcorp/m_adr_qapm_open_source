@@ -23,7 +23,7 @@ import javax.net.ssl.HttpsURLConnection;
 /**
  * Created by jingmin.xing on 2015/8/30.
  */
-public final class HttpInstrumentation {
+public final class   HttpInstrumentation {
     private HttpInstrumentation() {
     }
 
