@@ -6,7 +6,11 @@ import com.mqunar.qapm.QAPMConstant;
 import com.mqunar.qapm.tracing.BackgroundTrace;
 import com.mqunar.qapm.utils.AndroidUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 网络数据的JavaBean
@@ -91,6 +95,38 @@ public class NetworkData implements BaseData {
 
 
     @Override
+    public JSONObject toJSONObject() {
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("action", QAPMConstant.LOG_NET_TYPE);
+            jsonObject.put("reqUrl", this.reqUrl);
+            jsonObject.put("startTime", this.startTime);
+            jsonObject.put("endTime", this.endTime);
+            jsonObject.put("reqSize", this.reqSize);
+            jsonObject.put("resSize", this.resSize);
+            jsonObject.put("httpCode", this.httpCode);
+            jsonObject.put("hf", this.hf);
+            jsonObject.put("netType", this.netType);
+            jsonObject.put("netStatus", this.netStatus);
+            jsonObject.put("topPage", this.topPage);
+            // 添加header
+            JSONObject headerJsonObject = new JSONObject();
+            if (this.headers != null && this.headers.size() > 0) {
+                for (Map.Entry<String, String> entry : this.headers.entrySet()) {
+                    headerJsonObject.put(entry.getKey(), entry.getValue());
+                }
+            }
+            if (headerJsonObject.length() != 0) {
+                jsonObject.put("header", headerJsonObject);
+            }
+            return jsonObject;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public String toString() {
         return "NetworkData{" + "action='" + action + '\'' +
                 ", reqUrl='" + reqUrl + '\'' + ", startTime='" + startTime + '\'' +
@@ -99,5 +135,50 @@ public class NetworkData implements BaseData {
                 ", hf='" + hf + '\'' + ", netType='" + netType + '\'' +
                 ", netStatus='" + netStatus + '\'' + ", topPage='" + topPage + '\'' + ", headers=" + headers +
                 '}';
+    }
+
+    public static BaseData convertMap2BaseData(Map<String, String> data) {
+        NetworkData networkData = new NetworkData();
+        networkData.action = data.get("action") != null ? data.get("action") : AndroidUtils.UNKNOWN;
+        networkData.reqUrl = data.get("reqUrl") != null ? data.get("reqUrl") : AndroidUtils.UNKNOWN;
+        networkData.startTime = data.get("startTime") != null ? data.get("startTime") : AndroidUtils.UNKNOWN;
+        networkData.endTime = data.get("endTime") != null ? data.get("endTime") : AndroidUtils.UNKNOWN;
+        networkData.reqSize = data.get("reqSize") != null ? data.get("reqSize") : AndroidUtils.UNKNOWN;
+        networkData.resSize = data.get("resSize") != null ? data.get("resSize") : AndroidUtils.UNKNOWN;
+        networkData.httpCode = data.get("httpCode") != null ? data.get("httpCode") : AndroidUtils.UNKNOWN;
+        networkData.hf = data.get("hf") != null ? data.get("hf") : AndroidUtils.UNKNOWN;
+        networkData.netType = data.get("netType") != null ? data.get("netType") : AndroidUtils.UNKNOWN;
+        networkData.netStatus = data.get("netStatus") != null ? data.get("netStatus") : AndroidUtils.UNKNOWN;
+        networkData.topPage = data.get("topPage") != null ? data.get("topPage") : AndroidUtils.UNKNOWN;
+        String headers = data.get("headers") != null ? data.get("headers") : AndroidUtils.UNKNOWN;
+        if(headers != null){
+            try {
+                HashMap<String, String> headersMap = new HashMap<>();
+                JSONObject jsonObject = new JSONObject(headers);
+                if(jsonObject.get("Pitcher-Type") != null){
+                    headersMap.put("Pitcher-Type",jsonObject.get("Pitcher-Type").toString());
+                }
+                if(jsonObject.get("Pitcher-Url") != null){
+                    headersMap.put("Pitcher-Url",jsonObject.get("Pitcher-Url").toString());
+                }
+                if(jsonObject.get("L-Date") != null){
+                    headersMap.put("L-Date",jsonObject.get("L-Date").toString());
+                }
+                if(jsonObject.get("User-Agent") != null){
+                    headersMap.put("User-Agent",jsonObject.get("User-Agent").toString());
+                }
+                if(jsonObject.get("qrid") != null){
+                    headersMap.put("qrid",jsonObject.get("qrid").toString());
+                }
+                if(jsonObject.get("L-Uuid") != null){
+                    headersMap.put("L-Uuid",jsonObject.get("L-Uuid").toString());
+                }
+                networkData.headers = headersMap;
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return networkData;
     }
 }

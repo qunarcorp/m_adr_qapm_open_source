@@ -1,12 +1,7 @@
 package com.mqunar.qapm.network.instrumentation;
 
-import android.text.TextUtils;
-
 import com.mqunar.qapm.QAPM;
-import com.mqunar.qapm.QAPMConstant;
-import com.mqunar.qapm.dao.NetworkDataParse;
 import com.mqunar.qapm.dao.Storage;
-import com.mqunar.qapm.dao.UIDataParse;
 import com.mqunar.qapm.domain.NetworkData;
 import com.mqunar.qapm.logging.AgentLog;
 import com.mqunar.qapm.logging.AgentLogManager;
@@ -289,7 +284,7 @@ public class TransactionStateUtil {
     public static void end(TransactionState transactionState) {
         NetworkData networkData = transactionState.end();
         if(networkData != null && !networkData.excludeImageData() && !networkData.excludeIllegalData()) {
-            Storage.newStorage(QAPM.mContext).putData(networkData);
+            Storage.newStorage().putData(networkData);
         }
     }
 }

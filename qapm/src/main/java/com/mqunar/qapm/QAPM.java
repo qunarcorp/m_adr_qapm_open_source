@@ -2,18 +2,13 @@ package com.mqunar.qapm;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.location.Location;
-import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.text.TextUtils;
 
 import com.mqunar.qapm.core.ApplicationLifeObserver;
-import com.mqunar.qapm.dao.NetworkDataParse;
 import com.mqunar.qapm.dao.Storage;
-import com.mqunar.qapm.dao.UIDataParse;
 import com.mqunar.qapm.domain.BaseData;
+import com.mqunar.qapm.domain.NetworkData;
 import com.mqunar.qapm.logging.AgentLogManager;
 import com.mqunar.qapm.logging.AndroidAgentLog;
 import com.mqunar.qapm.logging.NullAgentLog;
@@ -25,13 +20,9 @@ import com.mqunar.qapm.utils.AndroidUtils;
 import com.mqunar.qapm.utils.IOUtils;
 import com.mqunar.qapm.utils.NetWorkUtils;
 import com.mqunar.qapm.utils.ReflectUtils;
-import com.mqunar.qapm.utils.SystemUtils;
-
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
@@ -98,18 +89,17 @@ public class QAPM implements IQAPM {
     }
 
     @Override
-    public void addUIMonitor(Map<String, String> uiMonitorMapData) {
-        if (uiMonitorMapData != null && uiMonitorMapData.size() > 0) {
-            BaseData uiLoadingData = UIDataParse.newInstance().convertMap2BaseData(uiMonitorMapData);
-            Storage.newStorage(mContext).putData(uiLoadingData);
+    public void addNetMonitor(Map<String, String> netMonitorMapData) {
+        if (netMonitorMapData != null && netMonitorMapData.size() > 0) {
+            BaseData netMonitorData = NetworkData.convertMap2BaseData(netMonitorMapData);
+            Storage.newStorage().putData(netMonitorData);
         }
     }
 
     @Override
-    public void addNetMonitor(Map<String, String> netMonitorMapData) {
-        if (netMonitorMapData != null && netMonitorMapData.size() > 0) {
-            BaseData netMonitorData = NetworkDataParse.newInstance().convertMap2BaseData(netMonitorMapData);
-            Storage.newStorage(mContext).putData(netMonitorData);
+    public void addQunarMonitor(BaseData baseData) {
+        if (baseData != null) {
+            Storage.newStorage().putData(baseData);
         }
     }
 
@@ -209,7 +199,7 @@ public class QAPM implements IQAPM {
                     return;
                 }
                 if (isforceSend) {
-                    Storage.newStorage(mContext).popData();
+                    Storage.newStorage().popData();
                 }
                 String path = IOUtils.getUploadDir(mContext);
                 if(path != null){

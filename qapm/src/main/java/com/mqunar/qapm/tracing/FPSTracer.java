@@ -234,7 +234,7 @@ public class FPSTracer extends BaseTracer implements LazyScheduler.ILazyTask, Vi
             fpsData.fps = String.valueOf(fps);
             fpsData.sumTime = String.valueOf(sumTime / OFFSET_TO_MS);
             fpsData.page = scene;
-            fpsData.action = "fps";
+            fpsData.action = QAPMConstant.LOG_FPS_TYPE;
             fpsData.statisticsTime = String.valueOf(System.currentTimeMillis());
 
             AgentLogManager.getAgentLog().info(fpsData.toString());
@@ -249,7 +249,7 @@ public class FPSTracer extends BaseTracer implements LazyScheduler.ILazyTask, Vi
     @Override
     protected void sendReport(BaseData baseData) {
         FPSData fpsData = (FPSData) baseData;
-        Storage.newStorage(null).putData(fpsData);
+        Storage.newStorage().putData(fpsData);
     }
 
     private enum DropStatus {
