@@ -32,6 +32,7 @@ public class QAPM implements IQAPM {
 
     private static QAPM sInstance = null;
     private static boolean isRelease;
+    private static boolean isQAPMLoadingDone;
 
     public static Context mContext;
     private ISender mSender;
@@ -49,6 +50,7 @@ public class QAPM implements IQAPM {
         mWorkLooper.start();
         mWorkHandler = new Handler(mWorkLooper.getLooper());
         registerActivityLifecycleCallbacks();
+        isQAPMLoadingDone = true;
     }
 
     public static QAPM make(Context context, String pid) {
@@ -88,16 +90,14 @@ public class QAPM implements IQAPM {
         return sInstance;
     }
 
-    @Override
-    public void addNetMonitor(Map<String, String> netMonitorMapData) {
+    public static void addNetMonitor(Map<String, String> netMonitorMapData) {
         if (netMonitorMapData != null && netMonitorMapData.size() > 0) {
             BaseData netMonitorData = NetworkData.convertMap2BaseData(netMonitorMapData);
             Storage.newStorage().putData(netMonitorData);
         }
     }
 
-    @Override
-    public void addQunarMonitor(BaseData baseData) {
+    public static void addQunarMonitor(BaseData baseData) {
         if (baseData != null) {
             Storage.newStorage().putData(baseData);
         }
