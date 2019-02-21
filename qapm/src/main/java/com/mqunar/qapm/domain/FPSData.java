@@ -8,6 +8,7 @@ import org.json.JSONObject;
  * 帧率统计
  */
 public class FPSData extends BaseAPMData {
+
     private static final long serialVersionUID = 1L;
     public String action; // hyNet/rnNet/iosNet/adrNet
     public String page;//当前场景
@@ -33,6 +34,7 @@ public class FPSData extends BaseAPMData {
                 .toString();
     }
 
+    @Override
     public JSONObject toJSONObject() {
         JSONObject jsonObject = new JSONObject();
         try {
@@ -61,6 +63,7 @@ public class FPSData extends BaseAPMData {
         public String dropped_normal;//3<丢帧数<9
         public String dropped_best;//0<=丢帧数<3
 
+        @Override
         public JSONObject toJSONObject() {
             JSONObject jsonObject = new JSONObject();
             try {

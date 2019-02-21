@@ -2,8 +2,6 @@ package com.mqunar.qapm.dao;
 
 import com.mqunar.qapm.domain.BaseData;
 
-import java.util.List;
-
 public interface IStorage {
 
     /**

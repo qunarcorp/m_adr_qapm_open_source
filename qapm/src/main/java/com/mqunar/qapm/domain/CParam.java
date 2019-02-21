@@ -2,7 +2,7 @@ package com.mqunar.qapm.domain;
 /**
  * Created by pengchengpc.liu on 2018/11/22.
  */
-public class CParam implements BaseData {
+public class CParam {
 
     private static final long serialVersionUID = 1L;
 
