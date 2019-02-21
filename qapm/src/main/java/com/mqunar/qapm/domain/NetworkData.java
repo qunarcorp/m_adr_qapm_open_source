@@ -56,7 +56,7 @@ public class NetworkData implements BaseData {
 
     /**
      * 排除不需要的图片相关的数据
-     * @return 是否需要排除
+     * @return 是否需要排除 true 排除掉 false 保留数据
      */
     public boolean excludeImageData() {
         if (TextUtils.isEmpty(reqUrl)) {
@@ -85,7 +85,7 @@ public class NetworkData implements BaseData {
 
     /**
      * 排除用户取消请求的情况
-     * @return 是否需要排除
+     * @return 是否需要排除 true 排除掉 false 保留数据
      */
     public boolean excludeIllegalData(){
         return startTimeInNano == BACKGROUND_START_TIME ||
