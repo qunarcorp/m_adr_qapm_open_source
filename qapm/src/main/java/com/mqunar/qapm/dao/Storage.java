@@ -64,6 +64,7 @@ public class Storage implements IStorage{
         if(saveDataFilePath != null){
             IOUtils.str2File(convertBaseData2Json(mStorageData), saveDataFilePath);
             mStorageData.clear();
+//            QAPM.getInstance().upload(false);
         }
     }
 

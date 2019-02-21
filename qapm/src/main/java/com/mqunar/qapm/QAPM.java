@@ -32,7 +32,6 @@ public class QAPM implements IQAPM {
 
     private static QAPM sInstance = null;
     private static boolean isRelease;
-    private static boolean isQAPMLoadingDone;
 
     public static Context mContext;
     private ISender mSender;
@@ -50,7 +49,6 @@ public class QAPM implements IQAPM {
         mWorkLooper.start();
         mWorkHandler = new Handler(mWorkLooper.getLooper());
         registerActivityLifecycleCallbacks();
-        isQAPMLoadingDone = true;
     }
 
     public static QAPM make(Context context, String pid) {
