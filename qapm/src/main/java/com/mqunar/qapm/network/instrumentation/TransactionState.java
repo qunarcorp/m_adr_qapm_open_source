@@ -12,6 +12,8 @@ import com.mqunar.qapm.utils.StringUtils;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
+import static com.mqunar.qapm.QAPMConstant.TIME_MILLIS_TO_NANO;
+
 
 /**
  * Created by jingmin.xing on 2015/8/30.
@@ -176,7 +178,7 @@ public final class TransactionState {
             NetworkData network = new NetworkData();
             network.reqUrl = url;
             network.startTime = String.valueOf(startTime); // 网络请求开始时的时间戳,精确到毫秒
-            network.endTime = String.valueOf(startTime + (endTimeInNano - startTimeInNano)); // 网络请求结束或者出错时的时间戳,精确到毫秒
+            network.endTime = String.valueOf(startTime + (endTimeInNano - startTimeInNano)/TIME_MILLIS_TO_NANO); // 网络请求结束或者出错时的时间戳,精确到毫秒
             network.reqSize = String.valueOf(bytesSent); // 网络请求大小，单位为*字节*
             network.resSize = String.valueOf(bytesReceived); // 收到的网络响应数据大小，单位为*字节*
             network.httpCode = statusCode == BACKGROUND_START_TIME ? AndroidUtils.UNKNOWN : String.valueOf(statusCode); // HTTP 请求的状态码，0表示正常，如“404”、“503”、“300”等
