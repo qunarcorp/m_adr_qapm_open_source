@@ -106,6 +106,7 @@ public class NetworkData implements BaseData {
             jsonObject.put("resSize", this.resSize);
             jsonObject.put("httpCode", this.httpCode);
             jsonObject.put("hf", this.hf);
+            jsonObject.put("errorType",this.errorType);
             jsonObject.put("netType", this.netType);
             jsonObject.put("netStatus", this.netStatus);
             jsonObject.put("topPage", this.topPage);
@@ -150,6 +151,7 @@ public class NetworkData implements BaseData {
         networkData.netType = data.get("netType") != null ? data.get("netType") : AndroidUtils.UNKNOWN;
         networkData.netStatus = data.get("netStatus") != null ? data.get("netStatus") : AndroidUtils.UNKNOWN;
         networkData.topPage = data.get("topPage") != null ? data.get("topPage") : AndroidUtils.UNKNOWN;
+        networkData.errorType = data.get("errorType") != null ?data.get("errorType") : AndroidUtils.UNKNOWN;
         String headers = data.get("headers") != null ? data.get("headers") : AndroidUtils.UNKNOWN;
         if(headers != null){
             try {
