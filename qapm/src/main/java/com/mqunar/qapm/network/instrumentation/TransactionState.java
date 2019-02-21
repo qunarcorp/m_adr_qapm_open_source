@@ -159,6 +159,7 @@ public final class TransactionState {
         if(!this.isComplete()) {
             this.state = State.COMPLETE;
             this.endTime = System.currentTimeMillis();
+            this.endTimeInNano = System.nanoTime();
         }
         return toSaveData();
     }
@@ -175,18 +176,18 @@ public final class TransactionState {
             NetworkData network = new NetworkData();
             network.reqUrl = url;
             network.startTime = String.valueOf(startTime); // 网络请求开始时的时间戳,精确到毫秒
-            network.endTime = String.valueOf(endTime); // 网络请求结束或者出错时的时间戳,精确到毫秒
+            network.endTime = String.valueOf(startTime + (endTimeInNano - startTimeInNano)); // 网络请求结束或者出错时的时间戳,精确到毫秒
             network.reqSize = String.valueOf(bytesSent); // 网络请求大小，单位为*字节*
             network.resSize = String.valueOf(bytesReceived); // 收到的网络响应数据大小，单位为*字节*
             network.httpCode = statusCode == BACKGROUND_START_TIME ? AndroidUtils.UNKNOWN : String.valueOf(statusCode); // HTTP 请求的状态码，0表示正常，如“404”、“503”、“300”等
             network.netStatus = netStatus; // 当前网络请求的成功与否
             network.topPage = BackgroundTrace.getCurrentActivityName(); // 发起网络请求的Activity
-            network.hf = errMsg; // http发生异常的原因,可选
+            network.hf = errorType; // http发生异常的原因,可选
             network.netType = wanType; // 发送网络请求时的网络类型，可选值为：“2G”、“3G”、“4G”、“Wifi”，“Cellular”，“Unknow”
             network.headers = headers; // 请求头--会做一些过滤
             network.startTimeInNano = startTimeInNano;
             network.endTimeInNano = endTimeInNano;
-            network.errorType = errorType;
+            network.errorType = errMsg;
             return network;
         }
     }

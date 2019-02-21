@@ -8,6 +8,8 @@ import com.mqunar.qapm.utils.AndroidUtils;
 
 import java.util.HashMap;
 
+import static com.mqunar.qapm.QAPMConstant.TIME_MILLIS_TO_NANO;
+
 /**
  * 网络数据的JavaBean
  * Created by pengchengpc.liu on 2018/11/22.
@@ -67,10 +69,10 @@ public class NetworkData implements BaseData {
                     || reqUrl.contains(".JPEG")
                     || reqUrl.contains(".webp")
                     || reqUrl.contains(".WEBP")) {
-                if (Integer.parseInt(endTime) - Integer.parseInt(startTime) > 2000) {
+                //图片相关 只上报大于2S的
+                if (endTimeInNano - startTimeInNano > 2000 * TIME_MILLIS_TO_NANO) {
                     return false;
                 }
-                // 排除图片
                 return true;
             }
         }
@@ -82,10 +84,8 @@ public class NetworkData implements BaseData {
      * @return 是否需要排除
      */
     public boolean excludeIllegalData(){
-        long startTime = Long.parseLong(this.startTime);
-        long endTime = Long.parseLong(this.endTime);
-        return startTime == BACKGROUND_START_TIME ||
-                BackgroundTrace.getBackgroundTime() > startTime && BackgroundTrace.getBackgroundTime() < endTime ||
+        return startTimeInNano == BACKGROUND_START_TIME ||
+                (BackgroundTrace.getBackgroundTime() > startTimeInNano && BackgroundTrace.getBackgroundTime() < endTimeInNano) ||
                 httpCode.equals(AndroidUtils.UNKNOWN) || netStatus == null;
     }
 

@@ -9,13 +9,13 @@ public class BackgroundTrace extends WatchMan {
     @Override
     protected void onForegroundListener() {
         sCurrentAppIsForeground = true;
-        sForegroundTime = System.currentTimeMillis();
+        sForegroundTime = System.nanoTime();
     }
 
     @Override
     protected void onBackgroundListener() {
         sCurrentAppIsForeground = false;
-        sBackgroundTime = System.currentTimeMillis();
+        sBackgroundTime = System.nanoTime();
     }
 
     public static long getBackgroundTime(){
