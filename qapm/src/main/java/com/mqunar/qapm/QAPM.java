@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.util.Log;
 
 import com.mqunar.qapm.core.ApplicationLifeObserver;
 import com.mqunar.qapm.dao.Storage;
@@ -211,10 +212,16 @@ public class QAPM implements IQAPM {
     }
 
     public static String getActiveNetworkCarrier() {
+        if(mContext == null){
+            Log.i("QAPM","mContext == null!!!");
+        }
         return AndroidUtils.carrierNameFromContext(mContext);
     }
 
     public static String getActiveNetworkWanType() {
+        if(mContext == null){
+            Log.i("QAPM","mContext == null!!!");
+        }
         return AndroidUtils.wanType(mContext);
     }
 }
