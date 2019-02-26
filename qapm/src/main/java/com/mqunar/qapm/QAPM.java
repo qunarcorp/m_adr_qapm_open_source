@@ -212,16 +212,10 @@ public class QAPM implements IQAPM {
     }
 
     public static String getActiveNetworkCarrier() {
-        if(mContext == null){
-            Log.i("ACRA","mContext == null!!!");
-        }
         return AndroidUtils.carrierNameFromContext(mContext);
     }
 
     public static String getActiveNetworkWanType() {
-        if(mContext == null){
-            Log.i("ACRA","mContext == null!!!");
-        }
         return AndroidUtils.wanType(mContext);
     }
 }
