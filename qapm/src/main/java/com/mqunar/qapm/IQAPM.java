@@ -1,9 +1,6 @@
 package com.mqunar.qapm;
 
-import com.mqunar.qapm.domain.BaseData;
 import com.mqunar.qapm.network.sender.ISender;
-
-import java.util.Map;
 
 public interface IQAPM {
 

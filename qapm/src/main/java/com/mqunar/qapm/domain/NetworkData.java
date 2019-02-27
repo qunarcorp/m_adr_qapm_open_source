@@ -2,6 +2,7 @@ package com.mqunar.qapm.domain;
 
 import android.text.TextUtils;
 
+import com.mqunar.qapm.QAPM;
 import com.mqunar.qapm.QAPMConstant;
 import com.mqunar.qapm.tracing.BackgroundTrace;
 import com.mqunar.qapm.utils.AndroidUtils;
@@ -62,7 +63,7 @@ public class NetworkData implements BaseData {
         if (TextUtils.isEmpty(reqUrl)) {
             return true;
         } else {
-            if (reqUrl.contains(QAPMConstant.t)) {
+            if (reqUrl.contains(QAPM.getInstance().getSender().getHostUrl())) {
                 // 排除ANDROID_MONITOR监控请求数据
                 return true;
             } else if (reqUrl.contains(".jpg")

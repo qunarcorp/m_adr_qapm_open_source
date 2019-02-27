@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.text.TextUtils;
 
 import com.mqunar.qapm.core.ApplicationLifeObserver;
 import com.mqunar.qapm.dao.Storage;
@@ -12,14 +13,13 @@ import com.mqunar.qapm.domain.NetworkData;
 import com.mqunar.qapm.logging.AgentLogManager;
 import com.mqunar.qapm.logging.AndroidAgentLog;
 import com.mqunar.qapm.logging.NullAgentLog;
+import com.mqunar.qapm.network.sender.DefaultSender;
 import com.mqunar.qapm.network.sender.ISender;
-import com.mqunar.qapm.network.sender.QAPMSender;
 import com.mqunar.qapm.tracing.BackgroundTrace;
 import com.mqunar.qapm.tracing.WatchMan;
 import com.mqunar.qapm.utils.AndroidUtils;
 import com.mqunar.qapm.utils.IOUtils;
 import com.mqunar.qapm.utils.NetWorkUtils;
-import com.mqunar.qapm.utils.ReflectUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +39,8 @@ public class QAPM implements IQAPM {
 
     private Handler mWorkHandler;
     private HandlerThread mWorkLooper;
+
+    private String mHostUrl;
 
     private QAPM (Context context, String pid) {
         mContext = getSafeContext(context) ;
@@ -109,13 +111,11 @@ public class QAPM implements IQAPM {
     }
 
     @Override
-    public ISender getSender(){
+    public ISender getSender() {
         if (mSender == null) {
-            String requestId = (String) ReflectUtils.invokeStaticMethod("com.mqunar.qav.uelog.QAVLog", "getRequestId", null, null);
-            if(isRelease){
-                mSender = new QAPMSender(QAPMConstant.HOST_URL, "", requestId);
-            } else {
-                mSender = new QAPMSender(QAPMConstant.HOST_URL_BETA, QAPMConstant.PITCHER_URL, requestId);
+            //sender未设置，使用传入的HostUrl配置默认上传sender
+            if (!TextUtils.isEmpty(mHostUrl) & mHostUrl.toLowerCase().contains("http")) {
+                mSender = new DefaultSender(mHostUrl);
             }
         }
         return mSender;
@@ -127,6 +127,10 @@ public class QAPM implements IQAPM {
         return this;
     }
 
+    public QAPM setHostUrl(String hostUrl) {
+        mHostUrl = hostUrl;
+        return this;
+    }
 
     @Override
     public void release(){

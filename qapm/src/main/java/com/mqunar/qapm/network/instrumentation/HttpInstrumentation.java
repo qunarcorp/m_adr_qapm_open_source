@@ -1,9 +1,6 @@
 package com.mqunar.qapm.network.instrumentation;
 
-import com.mqunar.qapm.QAPM;
-import com.mqunar.qapm.QAPMConstant;
 import com.mqunar.qapm.network.instrumentation.httpclient.ResponseHandlerImpl;
-import com.mqunar.qapm.utils.AndroidUtils;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -185,12 +182,10 @@ public final class   HttpInstrumentation {
     }
 
     private static HttpUriRequest _(HttpUriRequest request, TransactionState transactionState) {
-        request.setHeader(QAPMConstant.TRACE_ID, AndroidUtils.getTraceId(QAPM.mContext));
         return TransactionStateUtil.inspectAndInstrument(transactionState, request);
     }
 
     private static HttpRequest _(HttpHost host, HttpRequest request, TransactionState transactionState) {
-        request.setHeader(QAPMConstant.TRACE_ID, AndroidUtils.getTraceId(QAPM.mContext));
         return TransactionStateUtil.inspectAndInstrument(transactionState, host, request);
     }
 

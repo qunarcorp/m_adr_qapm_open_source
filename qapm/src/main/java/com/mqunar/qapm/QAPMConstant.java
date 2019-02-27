@@ -5,8 +5,6 @@ package com.mqunar.qapm;
  */
 public class QAPMConstant {
 
-    public static final String TRACE_ID = "L-Uuid"; //添加到请求头的附加参数
-
     // QAPM 自己上传路径，通过排除自己的上传路径来排除ANDROID_MONITOR监控请求数据
     public static String t = "http://l-wap6.wap.beta.cn6.qunar.com:9088/api/log/androidPerformanceLog";
 
@@ -15,13 +13,6 @@ public class QAPMConstant {
     public static String vid = "";      // app版本号，如80011001  80开头是iphone，60开头是安卓
     public static String cid = "";      // 渠道号
     public static String uid = "";      // 设备唯一号，如android为手机串号，iphone为mac地址 ，ios7以后为iid
-
-    //线上服务器地址
-    public static final String HOST_URL = "http://mloganalysts.corp.qunar.com/api/log/unifiedLog";
-    public static final String HOST_URL_BETA = "http://l-acra1.wap.beta.cn0.qunar.com:9099/api/log/unifiedLog";
-
-    //线上Pitcher地址
-    public static final String PITCHER_URL = "http://front.pitcher.beta.qunar.com/pitcher-proxy";
 
     //C参数
     public static final String C_PARAM = "";

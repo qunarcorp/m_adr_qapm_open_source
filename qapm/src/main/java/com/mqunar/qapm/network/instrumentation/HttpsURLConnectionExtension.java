@@ -1,15 +1,11 @@
 package com.mqunar.qapm.network.instrumentation;
 
-import com.mqunar.qapm.QAPM;
-import com.mqunar.qapm.QAPMConstant;
 import com.mqunar.qapm.logging.AgentLog;
 import com.mqunar.qapm.logging.AgentLogManager;
-
 import com.mqunar.qapm.network.instrumentation.io.CountingInputStream;
 import com.mqunar.qapm.network.instrumentation.io.CountingOutputStream;
 import com.mqunar.qapm.network.instrumentation.io.StreamCompleteEvent;
 import com.mqunar.qapm.network.instrumentation.io.StreamCompleteListener;
-import com.mqunar.qapm.utils.AndroidUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,7 +34,6 @@ public class HttpsURLConnectionExtension extends HttpsURLConnection {
     public HttpsURLConnectionExtension(HttpsURLConnection impl) {
         super(impl.getURL());
         this.impl = impl;
-        this.impl.addRequestProperty(QAPMConstant.TRACE_ID, AndroidUtils.getTraceId(QAPM.mContext));
     }
 
     public String getCipherSuite() {
