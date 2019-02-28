@@ -1,4 +1,7 @@
 apply plugin: 'com.android.library'
+apply from: 'http://gitlab.corp.qunar.com/m_adr_llama_config/m_adr_gradle_preset/raw/release/preset.gradle'
+apply from: 'http://gitlab.corp.qunar.com/m_adr_llama_config/m_adr_lib_version/raw/release/latest.properties'
+
 
 android {
     compileSdkVersion 28
@@ -35,4 +38,6 @@ task genJar(dependsOn:['build'])<< {
     makeJar("qapm_android.jar","build/intermediates/classes/release")
 }
 
-
+dependencies {
+    compileOnly "com.qunar.llama:goblin:${v_comQunarLlamaGoblin}"
+}

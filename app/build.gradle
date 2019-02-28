@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply from: 'http://gitlab.corp.qunar.com/m_adr_llama_config/m_adr_lib_version/raw/release/latest.properties'
 
 android {
     compileSdkVersion 28
@@ -28,6 +29,6 @@ android {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation project(':qapm')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "com.qunar.llama:fastLocalDebug:${v_comQunarLlamaFastLocalDebug}"
 }
