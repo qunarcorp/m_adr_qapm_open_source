@@ -366,89 +366,13 @@ public class AndroidUtils {
                 }
             }
         }
-
         String pageName = context.getClass().getSimpleName();
-        try {
-            Class transparentFragmentActivityBaseCls = Class.forName("com.mqunar.core.basectx.launcherfragment.TransparentFragmentActivityBase");
-            Class launcherFragmentActivityBaseCls = Class.forName("com.mqunar.core.basectx.launcherfragment.LauncherFragmentActivityBase");
-            if (transparentFragmentActivityBaseCls.isAssignableFrom(context.getClass())) {
-                Field _fragmentName = transparentFragmentActivityBaseCls.getDeclaredField("_fragmentName");
-                _fragmentName.setAccessible(true);
-                String _pageName = (String) _fragmentName.get(context);
-                if (!TextUtils.isEmpty(_pageName)) {
-                    pageName = _pageName;
-                }
-            } else if (launcherFragmentActivityBaseCls.isAssignableFrom(context.getClass())) {
-                Field _fragmentName = launcherFragmentActivityBaseCls.getDeclaredField("_fragmentName");
-                _fragmentName.setAccessible(true);
-                String _pageName = (String) _fragmentName.get(context);
-                if (!TextUtils.isEmpty(_pageName)) {
-                    pageName = _pageName;
-                }
-            }
-        } catch (Throwable ignore) {
-            ignore.printStackTrace();
-        }
-
-
-        String pkgName = getAtomName(context.getClass());
-
-        //QFragment
-        if (TextUtils.isEmpty(pkgName) &&
-                pageName.indexOf(".") > 0) {
-            //证明是sibei的activity复用机制
-            try {
-                Class<?> clazz = Class.forName(pageName);
-                pkgName = getAtomName(clazz);
-                pageName = clazz.getSimpleName();
-            } catch (Throwable t) {
-                AgentLogManager.getAgentLog().info( "found class crash");
-            }
-        }
-
-        if (!TextUtils.isEmpty(pkgName)) {
-            pageName = pkgName + "." + pageName;
-        }
-
-        //看看有没有自定义的PageName
-        if (context instanceof Activity) {
-            String pn = getPageName((Activity) context);
-            if (!TextUtils.isEmpty(pn)) {
-                return pageName + "-" + replace(pn);
-            }
-        }
 
         return pageName;
     }
 
-    /**
-     * 获取模块名称
-     *
-     * @param clz
-     * @return
-     */
-    public static String getAtomName(Class clz) {
-        try {
-            Class<?> clazz = Class.forName("com.mqunar.core.QunarApkLoader");
-            Method method = clazz.getDeclaredMethod("getPkgName", String.class);
-            if (method == null) {
-                method = clazz.getDeclaredMethod("getPackageName", String.class);
-            }
-            String packageName = (String) method.invoke(null, clz.getName());
-            return packageName.replace("com.mqunar.", "").replace("atom.", "");
-        } catch (Throwable ignore) {
-        }
-        return null;
-    }
 
-    private static String getPageName(Activity page) {
-        View decor = page.getWindow().peekDecorView();
-        if (decor != null) {
-            return getValue(decor, QAPM_OPEN_PAGE_KEY);
-        } else {
-            return null;
-        }
-    }
+
     public static boolean isInMainThread(final long threadId) {
         return Looper.getMainLooper().getThread().getId() == threadId;
     }

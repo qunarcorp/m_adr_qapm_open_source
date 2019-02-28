@@ -1,20 +1,21 @@
 package com.qunar.moudle;
 
-import com.mqunar.fastlocaldebug.DebugInitHelper;
-import com.mqunar.fastlocaldebug.LocalDebugApplication;
+import android.app.Application;
+
+import com.mqunar.qapm.QAPM;
+
 
 /**
- * Created by wzx on 2019/1/24.
+ * 测试Application
  */
-public class TestApplication extends LocalDebugApplication {
+public class TestApplication extends Application {
+
+
     @Override
-    protected void init() {
-        super.init();
-
-        //todo 快速配置指定Scheme
-        DebugInitHelper.addScheme("qunaraphone://hy?xxx");
-
-        //todo 自定义初始化代码
+    public void onCreate() {
+        super.onCreate();
+        QAPM.make(this, "10010");
+        QAPM.getInstance().withLogEnabled(true);
 
     }
 }

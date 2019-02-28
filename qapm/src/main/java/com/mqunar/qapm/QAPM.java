@@ -42,8 +42,8 @@ public class QAPM implements IQAPM {
 
     private String mHostUrl;
 
-    private QAPM (Context context, String pid) {
-        mContext = getSafeContext(context) ;
+    private QAPM(Context context, String pid) {
+        mContext = getSafeContext(context);
         setPid(pid);
         this.mWatchMan = new BackgroundTrace();
         initApplicationLifeObserver();
@@ -54,7 +54,7 @@ public class QAPM implements IQAPM {
     }
 
     public static QAPM make(Context context, String pid) {
-        if(pid == null || context == null){
+        if (pid == null || context == null) {
             throw new IllegalArgumentException("pid || context is not null");
         }
         return makeQAPM(context, pid);
@@ -71,22 +71,22 @@ public class QAPM implements IQAPM {
         return sInstance;
     }
 
-    public QAPM setVid(String vid){
+    public QAPM setVid(String vid) {
         QAPMConstant.vid = vid;
         return this;
     }
 
-    public QAPM setPid(String pid){
+    public QAPM setPid(String pid) {
         QAPMConstant.pid = pid;
         return this;
     }
 
-    public QAPM setCid(String cid){
+    public QAPM setCid(String cid) {
         QAPMConstant.cid = cid;
         return this;
     }
 
-    public static QAPM getInstance(){
+    public static QAPM getInstance() {
         return sInstance;
     }
 
@@ -116,6 +116,8 @@ public class QAPM implements IQAPM {
             //sender未设置，使用传入的HostUrl配置默认上传sender
             if (!TextUtils.isEmpty(mHostUrl) & mHostUrl.toLowerCase().contains("http")) {
                 mSender = new DefaultSender(mHostUrl);
+            } else {
+                throw new IllegalStateException("init  Sender must has a valid hostUrl!!");
             }
         }
         return mSender;
@@ -133,7 +135,7 @@ public class QAPM implements IQAPM {
     }
 
     @Override
-    public void release(){
+    public void release() {
         if (mWorkLooper != null) {
             mWorkLooper.quit();
         }
@@ -141,7 +143,7 @@ public class QAPM implements IQAPM {
     }
 
     private void registerActivityLifecycleCallbacks() {
-        if(mContext != null && mContext instanceof Application && mWatchMan != null){
+        if (mContext != null && mContext instanceof Application && mWatchMan != null) {
             ((Application) mContext).registerActivityLifecycleCallbacks(mWatchMan);
         }
     }
@@ -177,9 +179,9 @@ public class QAPM implements IQAPM {
         }
     }
 
-    public static String getSaveDataFile(String name){
+    public static String getSaveDataFile(String name) {
         String path = IOUtils.getUploadDir(mContext);
-        if(path == null){
+        if (path == null) {
             return null;
         }
         File destFile = new File(path, name);
@@ -204,7 +206,7 @@ public class QAPM implements IQAPM {
                     Storage.newStorage().popData();
                 }
                 String path = IOUtils.getUploadDir(mContext);
-                if(path != null){
+                if (path != null) {
                     String[] tempFileName = new File(path).list();
                     if (tempFileName != null && tempFileName.length > 0) {
                         getSender().send(mContext, path);

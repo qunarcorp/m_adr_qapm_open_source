@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.qunar.moudle">
@@ -11,11 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="allowBackup,icon,label,roundIcon,supportsRtl,theme,name">
-        <activity android:name="com.mqunar.fastlocaldebug.LocalDebugActivity"
+
+        <activity
+            android:name=".MainActivity"
             android:label="快速测试"
             android:screenOrientation="portrait"
-            tools:node="replace"
-            >
+            tools:node="replace">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,4 +25,5 @@
             </intent-filter>
         </activity>
     </application>
+
 </manifest>
