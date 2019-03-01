@@ -1,13 +1,6 @@
 
-
 buildscript {
     repositories {
-        maven {
-            url "http://l-nexus1.wap.cn8.qunar.com:8081/nexus/content/groups/public"
-        }
-        maven {
-            url "http://svn.corp.qunar.com:8081/nexus/content/groups/public"
-        }
         maven  {
             url "http://repo1.maven.org/maven2"
         }
@@ -27,12 +20,6 @@ buildscript {
 
 allprojects {
     repositories {
-        maven {
-            url "http://l-nexus1.wap.cn8.qunar.com:8081/nexus/content/groups/public"
-        }
-        maven {
-            url "http://svn.corp.qunar.com:8081/nexus/content/groups/public"
-        }
         maven  {
             url "http://repo1.maven.org/maven2"
         }
