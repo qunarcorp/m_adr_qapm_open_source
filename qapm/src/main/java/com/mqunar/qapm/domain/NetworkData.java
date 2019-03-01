@@ -2,8 +2,8 @@ package com.mqunar.qapm.domain;
 
 import android.text.TextUtils;
 
-import com.mqunar.qapm.QAPM;
 import com.mqunar.qapm.QAPMConstant;
+import com.mqunar.qapm.config.ConfigManager;
 import com.mqunar.qapm.tracing.BackgroundTrace;
 import com.mqunar.qapm.utils.AndroidUtils;
 
@@ -20,9 +20,6 @@ import static com.mqunar.qapm.QAPMConstant.TIME_MILLIS_TO_NANO;
  * Created by pengchengpc.liu on 2018/11/22.
  */
 public class NetworkData implements BaseData {
-
-    //    public String loc;  // 经纬度，经度在前，纬度在后，如"123.3,23.2"
-    //    public String mno; // 运营商，如"移动"，"联通"
 
     private static final long serialVersionUID = 1L;
     private static final int BACKGROUND_START_TIME = -1;
@@ -43,27 +40,18 @@ public class NetworkData implements BaseData {
     public String topPage; // 顶层页面，
     public String errorType;//网络错误类型
 
-
-    public static final String ERROR_TYPE_BAD_URL = "badurl";//错误的url
-    public static final String ERROR_TYPE_TIMEOUT = "timeout";//请求超时
-    public static final String ERROR_TYPE_UNCONNECT = "unconnect";//无网或者没有网络权限
-    public static final String ERROR_TYPE_HOST_ERR = "hostErr";//服务器错误，如请求被拒
-    public static final String ERROR_TYPE_IO_ERR = "ioErr";//io错误
-    public static final String ERROR_TYPE_SSL_ERR = "sslErr";//ssl错误
-
-
     public HashMap<String, String> headers = new HashMap<>();//过滤后的header
-
 
     /**
      * 排除不需要的图片相关的数据
+     *
      * @return 是否需要排除 true 排除掉 false 保留数据
      */
     public boolean excludeImageData() {
         if (TextUtils.isEmpty(reqUrl)) {
             return true;
         } else {
-            if (reqUrl.contains(QAPM.getInstance().getSender().getHostUrl())) {
+            if (reqUrl.contains(ConfigManager.getInstance().getHostUrl())) {
                 // 排除ANDROID_MONITOR监控请求数据
                 return true;
             } else if (reqUrl.contains(".jpg")
@@ -86,9 +74,10 @@ public class NetworkData implements BaseData {
 
     /**
      * 排除用户取消请求的情况
+     *
      * @return 是否需要排除 true 排除掉 false 保留数据
      */
-    public boolean excludeIllegalData(){
+    public boolean excludeIllegalData() {
         return startTimeInNano == BACKGROUND_START_TIME ||
                 (BackgroundTrace.getBackgroundTime() > startTimeInNano && BackgroundTrace.getBackgroundTime() < endTimeInNano) ||
                 httpCode.equals(AndroidUtils.UNKNOWN) || netStatus == null;
@@ -107,7 +96,7 @@ public class NetworkData implements BaseData {
             jsonObject.put("resSize", this.resSize);
             jsonObject.put("httpCode", this.httpCode);
             jsonObject.put("hf", this.hf);
-            jsonObject.put("errorType",this.errorType);
+            jsonObject.put("errorType", this.errorType);
             jsonObject.put("netType", this.netType);
             jsonObject.put("netStatus", this.netStatus);
             jsonObject.put("topPage", this.topPage);
@@ -139,49 +128,4 @@ public class NetworkData implements BaseData {
                 '}';
     }
 
-    public static BaseData convertMap2BaseData(Map<String, String> data) {
-        NetworkData networkData = new NetworkData();
-        networkData.action = data.get("action") != null ? data.get("action") : AndroidUtils.UNKNOWN;
-        networkData.reqUrl = data.get("reqUrl") != null ? data.get("reqUrl") : AndroidUtils.UNKNOWN;
-        networkData.startTime = data.get("startTime") != null ? data.get("startTime") : AndroidUtils.UNKNOWN;
-        networkData.endTime = data.get("endTime") != null ? data.get("endTime") : AndroidUtils.UNKNOWN;
-        networkData.reqSize = data.get("reqSize") != null ? data.get("reqSize") : AndroidUtils.UNKNOWN;
-        networkData.resSize = data.get("resSize") != null ? data.get("resSize") : AndroidUtils.UNKNOWN;
-        networkData.httpCode = data.get("httpCode") != null ? data.get("httpCode") : AndroidUtils.UNKNOWN;
-        networkData.hf = data.get("hf") != null ? data.get("hf") : AndroidUtils.UNKNOWN;
-        networkData.netType = data.get("netType") != null ? data.get("netType") : AndroidUtils.UNKNOWN;
-        networkData.netStatus = data.get("netStatus") != null ? data.get("netStatus") : AndroidUtils.UNKNOWN;
-        networkData.topPage = data.get("topPage") != null ? data.get("topPage") : AndroidUtils.UNKNOWN;
-        networkData.errorType = data.get("errorType") != null ?data.get("errorType") : AndroidUtils.UNKNOWN;
-        String headers = data.get("headers") != null ? data.get("headers") : AndroidUtils.UNKNOWN;
-        if(headers != null){
-            try {
-                HashMap<String, String> headersMap = new HashMap<>();
-                JSONObject jsonObject = new JSONObject(headers);
-                if(jsonObject.get("Pitcher-Type") != null){
-                    headersMap.put("Pitcher-Type",jsonObject.get("Pitcher-Type").toString());
-                }
-                if(jsonObject.get("Pitcher-Url") != null){
-                    headersMap.put("Pitcher-Url",jsonObject.get("Pitcher-Url").toString());
-                }
-                if(jsonObject.get("L-Date") != null){
-                    headersMap.put("L-Date",jsonObject.get("L-Date").toString());
-                }
-                if(jsonObject.get("User-Agent") != null){
-                    headersMap.put("User-Agent",jsonObject.get("User-Agent").toString());
-                }
-                if(jsonObject.get("qrid") != null){
-                    headersMap.put("qrid",jsonObject.get("qrid").toString());
-                }
-                if(jsonObject.get("L-Uuid") != null){
-                    headersMap.put("L-Uuid",jsonObject.get("L-Uuid").toString());
-                }
-                networkData.headers = headersMap;
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return networkData;
-    }
 }
