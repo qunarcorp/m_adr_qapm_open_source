@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
 
 android {
     compileSdkVersion 28
@@ -20,19 +21,20 @@ android {
     useLibrary 'org.apache.http.legacy'
 }
 
-//定义一个函数，target是生成jar包的文件名，classDir是class文件所在的文件夹
-def makeJar(String target,String classDir){
-    exec{
-        executable "jar"   //调用jar
-        args "cvf",target
-        args "-C", classDir
-        args "","."
-    }
-}
+uploadArchives {
+    repositories {
+        mavenDeployer {
 
-//新建一个task,名为buildLib,依赖build(build是一个自带的task)
-task genJar(dependsOn:['build'])<< {
-    makeJar("qapm_android.jar","build/intermediates/classes/release")
+            repository(url: uri('/Users/qitmac000018/AndroidStudioProjects/APM/qapm_aar'))
+            //设置插件的GAV参数
+            pom.groupId = sonatypeGroupId
+            pom.artifactId = sonatypeArtifactId
+            pom.version = sonatypeVersion
+            pom.packaging = sonatypePackage
+            pom.name = sonatypeName
+
+        }
+    }
 }
 
 dependencies {

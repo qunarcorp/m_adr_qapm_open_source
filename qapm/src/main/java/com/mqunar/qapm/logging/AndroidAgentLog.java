@@ -7,7 +7,7 @@ import android.util.Log;
  */
 public class AndroidAgentLog implements AgentLog {
     private static final String TAG = "qapm";
-    private int level = INFO;
+    private int level = DEBUG;
 
     public AndroidAgentLog() {
     }

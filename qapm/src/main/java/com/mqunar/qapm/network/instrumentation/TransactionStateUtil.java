@@ -1,5 +1,7 @@
 package com.mqunar.qapm.network.instrumentation;
 
+import android.util.Log;
+
 import com.mqunar.qapm.QAPM;
 import com.mqunar.qapm.dao.Storage;
 import com.mqunar.qapm.domain.NetworkData;
@@ -32,6 +34,7 @@ import java.util.Map;
  * Created by jingmin.xing on 2015/8/30.
  */
 public class TransactionStateUtil {
+    public static final String TAG = "TransactionStateUtil";
     private static final AgentLog log = AgentLogManager.getAgentLog();
     private static final String CONTENT_LENGTH_HEADER = "Content-Length";
     public static final String CONTENT_TYPE_HEADER = "Content-Type";
@@ -283,6 +286,7 @@ public class TransactionStateUtil {
 
     public static void end(TransactionState transactionState) {
         NetworkData networkData = transactionState.end();
+        log.debug("end " + networkData.toString());
         if(networkData != null && !networkData.excludeImageData() && !networkData.excludeIllegalData()) {
             Storage.newStorage().putData(networkData);
         }
