@@ -19,11 +19,4 @@ public interface IQAPM {
      */
     void addCustomMonitor(BaseData baseData);
 
-    /**
-     * 设施网络发送器，并且发送器必须是实现了ISender接口的类
-     *
-     * @param isForceSend 是否强制发送
-     */
-    void upload(final boolean isForceSend);
-
 }
