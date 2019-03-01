@@ -19,9 +19,6 @@ import com.mqunar.qapm.utils.AndroidUtils;
 import com.mqunar.qapm.utils.IOUtils;
 import com.mqunar.qapm.utils.NetWorkUtils;
 
-import java.io.File;
-import java.io.IOException;
-
 /**
  * QAPM的管理类
  */
@@ -85,6 +82,10 @@ public class QAPM implements IQAPM {
         unregisterActivityLifecycleCallbacks();
     }
 
+    public Context getContext() {
+        return mContext;
+    }
+
     private void registerActivityLifecycleCallbacks() {
         if (mContext != null && mContext instanceof Application && mWatchMan != null) {
             ((Application) mContext).registerActivityLifecycleCallbacks(mWatchMan);
@@ -122,19 +123,6 @@ public class QAPM implements IQAPM {
         }
     }
 
-    public static String getSaveDataFile(String name) {
-        String path = IOUtils.getUploadDir(mContext);
-        if (path == null) {
-            return null;
-        }
-        File destFile = new File(path, name);
-        try {
-            destFile.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return destFile.toString();
-    }
 
     public void upload(final boolean isForceSend) {
         //防止主线程调用引起ANR
@@ -178,11 +166,4 @@ public class QAPM implements IQAPM {
         });
     }
 
-    public static String getActiveNetworkCarrier() {
-        return AndroidUtils.carrierNameFromContext(mContext);
-    }
-
-    public static String getActiveNetworkWanType() {
-        return AndroidUtils.wanType(mContext);
-    }
 }

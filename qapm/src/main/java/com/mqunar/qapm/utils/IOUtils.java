@@ -17,6 +17,20 @@ public class IOUtils {
 
     private static String sTempDir;
 
+    public static String getSaveDataFile(Context context, String name) {
+        String path = getUploadDir(context);
+        if (path == null) {
+            return null;
+        }
+        File destFile = new File(path, name);
+        try {
+            destFile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return destFile.toString();
+    }
+
     public static String getUploadDir(Context mContext) {
         if (sTempDir == null) {
             if (mContext == null) {

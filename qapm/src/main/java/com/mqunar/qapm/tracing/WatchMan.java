@@ -90,23 +90,25 @@ public abstract class WatchMan implements Application.ActivityLifecycleCallbacks
 
     @Override
     public void onActivityDestroyed(Activity activity) {
-        AgentLogManager.getAgentLog().debug("onActivityDestroyed(" + activity.getClass().getSimpleName() + ")");
+        AgentLogManager.getAgentLog().debug("onActivityDestroyed(" + activity.getClass().getSimpleName() +
+                ")");
     }
 
-    public static String getCurrentActivityName(){
-        if(TextUtils.isEmpty(sCurrentActivityName)){
+    public static String getCurrentActivityName() {
+        if (TextUtils.isEmpty(sCurrentActivityName)) {
             sCurrentActivityName = AndroidUtils.UNKNOWN;
         }
         return sCurrentActivityName;
     }
 
-    private void upload(boolean isforceSend){
+    private void upload(boolean isForceSend) {
         QAPM instance = QAPM.getInstance();
-        if(instance != null){
-            instance.upload(isforceSend);
+        if (instance != null) {
+            instance.upload(isForceSend);
         }
     }
 
     protected abstract void onForegroundListener();
+
     protected abstract void onBackgroundListener();
 }
