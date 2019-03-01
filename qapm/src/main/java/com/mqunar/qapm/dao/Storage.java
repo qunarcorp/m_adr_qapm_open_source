@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Storage implements IStorage{
+public class Storage implements IStorage {
 
     private static final int MAX_SIZE = 10;
     private static Storage sInstance = null;
@@ -43,10 +43,10 @@ public class Storage implements IStorage{
     public void putData(final BaseData data) {
         getStorageHandler().post(new Runnable() {
             public void run() {
-                if(data == null){
-                    return ;
+                if (data == null) {
+                    return;
                 }
-                if(mStorageData.size() < MAX_SIZE -1){
+                if (mStorageData.size() < MAX_SIZE - 1) {
                     mStorageData.add(data);
                     return;
                 }
@@ -57,22 +57,22 @@ public class Storage implements IStorage{
 
     @Override
     public void saveData(final BaseData data) {
-        if(data != null){
+        if (data != null) {
             mStorageData.add(data);
         }
-        String saveDataFilePath = QAPM.getSaveDataFile(System.currentTimeMillis() + "");
-        if(saveDataFilePath != null){
+        String saveDataFilePath = IOUtils.getSaveDataFile(QAPM.getInstance().getContext(),
+                System.currentTimeMillis() + "");
+        if (saveDataFilePath != null) {
             IOUtils.str2File(convertBaseData2Json(mStorageData), saveDataFilePath);
             mStorageData.clear();
-//            QAPM.getInstance().upload(false);
         }
     }
 
     private String convertBaseData2Json(List<BaseData> mStorageData) {
         JSONArray jsonArray = new JSONArray();
-        for (int i = 0; i < mStorageData.size(); i++){
+        for (int i = 0; i < mStorageData.size(); i++) {
             JSONObject jsonObject = mStorageData.get(i).toJSONObject();
-            if(jsonObject != null){
+            if (jsonObject != null) {
                 jsonArray.put(jsonObject);
             }
         }
@@ -84,7 +84,7 @@ public class Storage implements IStorage{
     public void popData() {
         getStorageHandler().post(new Runnable() {
             public void run() {
-                if(mStorageData != null && mStorageData.size() > 0){
+                if (mStorageData != null && mStorageData.size() > 0) {
                     saveData(null);
                 }
             }

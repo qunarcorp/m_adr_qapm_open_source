@@ -52,8 +52,8 @@ public class TransactionStateUtil {
         log.debug("inspectAndInstrument url " + url);
         transactionState.setUrl(url);
         transactionState.setHttpMethod(httpMethod);
-        transactionState.setCarrier(QAPM.getActiveNetworkCarrier());
-        transactionState.setWanType(QAPM.getActiveNetworkWanType());
+        transactionState.setCarrier(AndroidUtils.carrierNameFromContext(QAPM.getInstance().getContext()));
+        transactionState.setWanType(AndroidUtils.wanType(QAPM.getInstance().getContext()));
     }
 
     public static void inspectAndInstrument(TransactionState transactionState, HttpURLConnection conn) {

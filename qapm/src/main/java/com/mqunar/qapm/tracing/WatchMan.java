@@ -2,11 +2,12 @@ package com.mqunar.qapm.tracing;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import com.mqunar.qapm.QAPM;
 import com.mqunar.qapm.logging.AgentLogManager;
+import com.mqunar.qapm.schedule.WorkHandlerManager;
 import com.mqunar.qapm.utils.AndroidUtils;
 
 /**
@@ -50,7 +51,7 @@ public abstract class WatchMan implements Application.ActivityLifecycleCallbacks
     @Override
     public void onActivityResumed(final Activity activity) {
         sCurrentActivityName = AndroidUtils.getPageName(activity);
-        upload(false);
+        upload(activity.getApplicationContext(), false);
     }
 
     @Override
@@ -78,7 +79,7 @@ public abstract class WatchMan implements Application.ActivityLifecycleCallbacks
             if (!isBackToDesktop) {
                 AgentLogManager.getAgentLog().debug("强制上传QAV日志");
                 isBackToDesktop = true;
-                upload(true);
+                upload(activity.getApplicationContext(), true);
             }
         }
     }
@@ -90,23 +91,28 @@ public abstract class WatchMan implements Application.ActivityLifecycleCallbacks
 
     @Override
     public void onActivityDestroyed(Activity activity) {
-        AgentLogManager.getAgentLog().debug("onActivityDestroyed(" + activity.getClass().getSimpleName() + ")");
+        AgentLogManager.getAgentLog().debug("onActivityDestroyed(" + activity.getClass().getSimpleName() +
+                ")");
     }
 
-    public static String getCurrentActivityName(){
-        if(TextUtils.isEmpty(sCurrentActivityName)){
+    public static String getCurrentActivityName() {
+        if (TextUtils.isEmpty(sCurrentActivityName)) {
             sCurrentActivityName = AndroidUtils.UNKNOWN;
         }
         return sCurrentActivityName;
     }
 
-    private void upload(boolean isforceSend){
-        QAPM instance = QAPM.getInstance();
-        if(instance != null){
-            instance.upload(isforceSend);
-        }
+    /**
+     * 设施网络发送器，并且发送器必须是实现了ISender接口的类
+     *
+     * @param context
+     * @param isForceSend 是否强制发送
+     */
+    private void upload(Context context, boolean isForceSend) {
+        WorkHandlerManager.getInstance().postToUpload(context, isForceSend);
     }
 
     protected abstract void onForegroundListener();
+
     protected abstract void onBackgroundListener();
 }
