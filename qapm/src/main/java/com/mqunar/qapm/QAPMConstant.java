@@ -5,18 +5,6 @@ package com.mqunar.qapm;
  */
 public class QAPMConstant {
 
-
-    // id 相关， 只有pid为外部必须传入， 其他参数为可选择传入
-    public static String pid = "";      // 去哪儿旅行客户端Id
-    public static String vid = "";      // app版本号，如80011001  80开头是iphone，60开头是安卓
-    public static String cid = "";      // 渠道号
-    public static String uid = "";      // 设备唯一号，如android为手机串号，iphone为mac地址 ，ios7以后为iid
-
-    //C参数
-    public static final String C_PARAM = "";
-    //requestId
-    public static final String REQUEST_ID = "";
-
     // 上报数据的格式
     public static final String PLATFORM = "adr";        // 上传的时候的平台标识，adr：android 平台
     public static final String LOG_TYPE = "apm";        // 当前上传的内容标识符，apm：性能监控相关。

@@ -4,16 +4,14 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.text.TextUtils;
 
+import com.mqunar.qapm.config.Config;
+import com.mqunar.qapm.config.ConfigManager;
 import com.mqunar.qapm.core.ApplicationLifeObserver;
 import com.mqunar.qapm.dao.Storage;
 import com.mqunar.qapm.domain.BaseData;
-import com.mqunar.qapm.domain.NetworkData;
+import com.mqunar.qapm.logging.AgentLog;
 import com.mqunar.qapm.logging.AgentLogManager;
-import com.mqunar.qapm.logging.AndroidAgentLog;
-import com.mqunar.qapm.logging.NullAgentLog;
-import com.mqunar.qapm.network.sender.DefaultSender;
 import com.mqunar.qapm.network.sender.ISender;
 import com.mqunar.qapm.tracing.BackgroundTrace;
 import com.mqunar.qapm.tracing.WatchMan;
@@ -23,28 +21,29 @@ import com.mqunar.qapm.utils.NetWorkUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
 /**
- * 最上层的管理类
+ * QAPM的管理类
  */
 public class QAPM implements IQAPM {
 
     private static QAPM sInstance = null;
-    private static boolean isRelease;
+    private static Context mContext;
 
-    public static Context mContext;
-    private ISender mSender;
     private WatchMan mWatchMan;
-
     private Handler mWorkHandler;
     private HandlerThread mWorkLooper;
 
-    private String mHostUrl;
+    private final AgentLog mLog = AgentLogManager.getAgentLog();
 
-    private QAPM(Context context, String pid) {
+    public static QAPM getInstance() {
+        return sInstance;
+    }
+
+    private QAPM(Context context, Config config) {
         mContext = getSafeContext(context);
-        setPid(pid);
+        //交给ConfigManager管理
+        ConfigManager.getInstance().setConfig(config);
         this.mWatchMan = new BackgroundTrace();
         initApplicationLifeObserver();
         mWorkLooper = new HandlerThread(QAPMConstant.THREAD_UPLOAD);
@@ -53,85 +52,29 @@ public class QAPM implements IQAPM {
         registerActivityLifecycleCallbacks();
     }
 
-    public static QAPM make(Context context, String pid) {
-        if (pid == null || context == null) {
-            throw new IllegalArgumentException("pid || context is not null");
+    public static QAPM make(Context context, Config config) {
+        if (context == null) {
+            throw new IllegalArgumentException("context is not null");
         }
-        return makeQAPM(context, pid);
+        return makeQAPM(context, config);
     }
 
-    private static QAPM makeQAPM(Context context, String pid) {
+    private static QAPM makeQAPM(Context context, Config config) {
         if (sInstance == null) {
             synchronized (QAPM.class) {
                 if (sInstance == null) {
-                    sInstance = new QAPM(context, pid);
+                    sInstance = new QAPM(context, config);
                 }
             }
         }
         return sInstance;
     }
 
-    public QAPM setVid(String vid) {
-        QAPMConstant.vid = vid;
-        return this;
-    }
-
-    public QAPM setPid(String pid) {
-        QAPMConstant.pid = pid;
-        return this;
-    }
-
-    public QAPM setCid(String cid) {
-        QAPMConstant.cid = cid;
-        return this;
-    }
-
-    public static QAPM getInstance() {
-        return sInstance;
-    }
-
-    public static void addNetMonitor(Map<String, String> netMonitorMapData) {
-        if (netMonitorMapData != null && netMonitorMapData.size() > 0) {
-            BaseData netMonitorData = NetworkData.convertMap2BaseData(netMonitorMapData);
-            Storage.newStorage().putData(netMonitorData);
-        }
-    }
-
-    public static void addQunarMonitor(BaseData baseData) {
+    @Override
+    public void addCustomMonitor(BaseData baseData) {
         if (baseData != null) {
             Storage.newStorage().putData(baseData);
         }
-    }
-
-    @Override
-    public void setSender(ISender sender) {
-        if (sender != null) {
-            mSender = sender;
-        }
-    }
-
-    @Override
-    public ISender getSender() {
-        if (mSender == null) {
-            //sender未设置，使用传入的HostUrl配置默认上传sender
-            if (!TextUtils.isEmpty(mHostUrl) & mHostUrl.toLowerCase().contains("http")) {
-                mSender = new DefaultSender(mHostUrl);
-            } else {
-                throw new IllegalStateException("init  Sender must has a valid hostUrl!!");
-            }
-        }
-        return mSender;
-    }
-
-    public QAPM withLogEnabled(boolean enabled) {
-        isRelease = !enabled;
-        AgentLogManager.setAgentLog((enabled ? new AndroidAgentLog() : new NullAgentLog()));
-        return this;
-    }
-
-    public QAPM setHostUrl(String hostUrl) {
-        mHostUrl = hostUrl;
-        return this;
     }
 
     @Override
@@ -193,8 +136,7 @@ public class QAPM implements IQAPM {
         return destFile.toString();
     }
 
-    public void upload(final boolean isforceSend) {
-//        ExceptionFinder.getInstance().checkForThrows(mContext);
+    public void upload(final boolean isForceSend) {
         //防止主线程调用引起ANR
         mWorkHandler.post(new Runnable() {
             @Override
@@ -202,15 +144,35 @@ public class QAPM implements IQAPM {
                 if (!NetWorkUtils.isNetworkConnected(mContext)) {// 没有网络先不处理
                     return;
                 }
-                if (isforceSend) {
+                if (isForceSend) {
                     Storage.newStorage().popData();
                 }
-                String path = IOUtils.getUploadDir(mContext);
-                if (path != null) {
-                    String[] tempFileName = new File(path).list();
-                    if (tempFileName != null && tempFileName.length > 0) {
-                        getSender().send(mContext, path);
+                String uploadDir = IOUtils.getUploadDir(mContext);
+                if (uploadDir != null) {
+                    String[] uploadFiles = IOUtils.getFileByNameFilter(uploadDir);
+                    if (uploadFiles != null && uploadFiles.length > 0) {
+                        for (final String fileName : uploadFiles) {
+                            String bParam = IOUtils.file2Str(fileName);
+                            String cParam = AndroidUtils.getCParam(mContext);
+                            ConfigManager.getInstance().getSender().sendParamData(bParam, cParam,
+                                    new ISender.SenderListener() {
+                                        @Override
+                                        public void onSendDataSuccess() {
+                                            mLog.info("uploadFile onSendDataSuccess=" + fileName);
+                                            IOUtils.deleteFile(fileName);
+                                        }
+
+                                        @Override
+                                        public void onSendDataFail() {
+                                            mLog.info("uploadFile onSendDataFail=" + fileName);
+                                        }
+                                    });
+                        }
+                    } else {
+                        mLog.info("uploadFiles is null");
                     }
+                } else {
+                    mLog.info("uploadDir is null");
                 }
             }
         });

@@ -3,8 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/qapm.iml" filepath="$PROJECT_DIR$/qapm.iml" />
-      <module fileurl="file://$PROJECT_DIR$/qapm/qapm-qapm.iml" filepath="$PROJECT_DIR$/qapm/qapm-qapm.iml" />
+      <module fileurl="file://$PROJECT_DIR$/m_adr_qapm_open_source.iml" filepath="$PROJECT_DIR$/m_adr_qapm_open_source.iml" />
+      <module fileurl="file://$PROJECT_DIR$/qapm/qapm.iml" filepath="$PROJECT_DIR$/qapm/qapm.iml" />
     </modules>
   </component>
 </project>
