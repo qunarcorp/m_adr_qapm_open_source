@@ -79,8 +79,7 @@ public class NetworkData implements BaseData {
      */
     public boolean excludeIllegalData() {
         return startTimeInNano == BACKGROUND_START_TIME ||
-                (BackgroundTrace.getBackgroundTime() > startTimeInNano && BackgroundTrace.getBackgroundTime() < endTimeInNano) ||
-                httpCode.equals(AndroidUtils.UNKNOWN) || netStatus == null;
+                (BackgroundTrace.getBackgroundTime() > startTimeInNano && BackgroundTrace.getBackgroundTime() < endTimeInNano);
     }
 
 
