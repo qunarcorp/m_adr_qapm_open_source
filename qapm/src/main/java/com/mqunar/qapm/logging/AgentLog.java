@@ -1,8 +1,6 @@
 package com.mqunar.qapm.logging;
 
-/**
- * Created by jingmin.xing on 2015/8/30.
- */
+
 public interface AgentLog {
     int DEBUG = 5;
     int VERBOSE = 4;

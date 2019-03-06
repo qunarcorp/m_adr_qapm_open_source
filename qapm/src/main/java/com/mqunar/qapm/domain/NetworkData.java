@@ -54,19 +54,6 @@ public class NetworkData implements BaseData {
             if (reqUrl.contains(ConfigManager.getInstance().getHostUrl())) {
                 // 排除ANDROID_MONITOR监控请求数据
                 return true;
-            } else if (reqUrl.contains(".jpg")
-                    || reqUrl.contains(".JPG")
-                    || reqUrl.contains(".png")
-                    || reqUrl.contains(".PNG")
-                    || reqUrl.contains(".jpeg")
-                    || reqUrl.contains(".JPEG")
-                    || reqUrl.contains(".webp")
-                    || reqUrl.contains(".WEBP")) {
-                //图片相关 只上报大于2S的
-                if (endTimeInNano - startTimeInNano > 2000 * TIME_MILLIS_TO_NANO) {
-                    return false;
-                }
-                return true;
             }
         }
         return false;

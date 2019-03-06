@@ -73,7 +73,11 @@ public class QAPM implements IQAPM {
     }
 
     private void registerActivityLifecycleCallbacks() {
-        if (mContext != null && mContext instanceof Application && mWatchMan != null) {
+        if(!(mContext instanceof Application)){
+            throw new IllegalStateException("context is not instanceof Application!");
+
+        }
+        if (mWatchMan != null) {
             ((Application) mContext).registerActivityLifecycleCallbacks(mWatchMan);
         }
     }
@@ -86,7 +90,11 @@ public class QAPM implements IQAPM {
     }
 
     private void unregisterActivityLifecycleCallbacks() {
-        if (mContext != null && mContext instanceof Application && mWatchMan != null) {
+        if(!(mContext instanceof Application)){
+            throw new IllegalStateException("context is not instanceof Application!");
+
+        }
+        if (mWatchMan != null) {
             ((Application) mContext).unregisterActivityLifecycleCallbacks(mWatchMan);
             ((Application) mContext).unregisterActivityLifecycleCallbacks(ApplicationLifeObserver.getInstance());
         }

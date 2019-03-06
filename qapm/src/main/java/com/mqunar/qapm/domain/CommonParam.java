@@ -2,7 +2,7 @@ package com.mqunar.qapm.domain;
 /**
  * Created by pengchengpc.liu on 2018/11/22.
  */
-public class CParam {
+public class CommonParam {
 
     private static final long serialVersionUID = 1L;
 
@@ -18,7 +18,7 @@ public class CParam {
 
     @Override
     public String toString() {
-        return "CParam{" + "vid='" + vid + '\'' +
+        return "CommonParam{" + "vid='" + vid + '\'' +
                 ", pid='" + pid + '\'' + ", cid='" + cid + '\'' +
                 ", uid='" + uid + '\'' + ", loc='" + loc + '\'' +
                 ", mno='" + mno + '\'' + ", osVersion='" + osVersion + '\'' +

@@ -13,12 +13,41 @@ import com.mqunar.qapm.network.sender.ISender;
  */
 public class Config {
 
-    public String pid = "";// 客户端Id
-    public String vid = "";// app版本号
-    public String cid = "";// 渠道号
-    public boolean isLogEnable;//是否输出log开关
-    public ISender sender; //日志发送sender对象
-    public String hostUrl; //日志上传地址
+    private String pid = "";// 客户端Id
+    private String vid = "";// app版本号
+    private String cid = "";// 渠道号
+    private boolean isLogEnable;//是否输出log开关
+    private ISender sender; //日志发送sender对象
+    private String hostUrl; //日志上传地址
+
+    public String getPid() {
+        return pid;
+    }
+
+    public String getVid() {
+        return vid;
+    }
+
+    public void setSender(ISender sender) {
+        this.sender = sender;
+    }
+
+    public String getCid() {
+
+        return cid;
+    }
+
+    public boolean isLogEnable() {
+        return isLogEnable;
+    }
+
+    public ISender getSender() {
+        return sender;
+    }
+
+    public String getHostUrl() {
+        return hostUrl;
+    }
 
     public static class ConfigBuilder {
         private Config config = new Config();

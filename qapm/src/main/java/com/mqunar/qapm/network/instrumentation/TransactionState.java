@@ -5,7 +5,6 @@ import com.mqunar.qapm.logging.AgentLog;
 import com.mqunar.qapm.logging.AgentLogManager;
 import com.mqunar.qapm.tracing.BackgroundTrace;
 import com.mqunar.qapm.utils.AndroidUtils;
-import com.mqunar.qapm.utils.StringUtils;
 
 import java.util.HashMap;
 
@@ -77,11 +76,9 @@ public final class TransactionState {
 
     public void setUrl(String urlString) {
         log.debug("setUrl urlString " + urlString);
-        String url = StringUtils.sanitizeUrl(urlString);
-        log.debug("setUrl sanitizeUrl url " + url);
-        if(url != null) {
+        if(urlString != null) {
             if(!this.isSent()) {
-                this.url = url;
+                this.url = urlString;
             } else {
                 log.warning("setUrl(...) called on TransactionState in " + this.state.toString() + " state");
             }

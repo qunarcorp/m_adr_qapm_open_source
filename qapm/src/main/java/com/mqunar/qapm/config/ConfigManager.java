@@ -1,6 +1,7 @@
 package com.mqunar.qapm.config;
 
 import android.text.TextUtils;
+import android.util.Patterns;
 
 import com.mqunar.qapm.logging.AgentLogManager;
 import com.mqunar.qapm.logging.AndroidAgentLog;
@@ -16,7 +17,7 @@ import com.mqunar.qapm.network.sender.ISender;
  */
 public class ConfigManager {
 
-    private static ConfigManager instance;
+    private static volatile  ConfigManager instance;
 
     private Config mConfig; //apm配置
 
@@ -37,43 +38,43 @@ public class ConfigManager {
     public void setConfig(Config mConfig) {
         this.mConfig = mConfig;
         //配置log
-        AgentLogManager.setAgentLog((mConfig.isLogEnable ? new AndroidAgentLog() : new NullAgentLog()));
+        AgentLogManager.setAgentLog((mConfig.isLogEnable() ? new AndroidAgentLog() : new NullAgentLog()));
     }
 
     public ISender getSender() {
-        if (mConfig.sender == null) {
+        if (mConfig.getSender() == null) {
             //sender未设置，使用传入的HostUrl配置默认上传sender
-            if (mConfig.hostUrl.toLowerCase().contains("http")) {
-                mConfig.sender = new DefaultSender(mConfig.hostUrl);
+            if( Patterns.WEB_URL.matcher(mConfig.getHostUrl()).matches()) {
+                mConfig.setSender(new DefaultSender(mConfig.getHostUrl()));
             } else {
                 throw new IllegalStateException("hostUrl is invalid!");
             }
         }
-        return mConfig.sender;
+        return mConfig.getSender();
     }
 
     public String getHostUrl() {
-        if (mConfig.sender == null) {
-            return mConfig.hostUrl;
+        if (mConfig.getSender() == null) {
+            return mConfig.getHostUrl();
         } else {
-            if (TextUtils.isEmpty(mConfig.sender.getHostUrl())) {
-                return mConfig.hostUrl;
+            if (TextUtils.isEmpty(mConfig.getSender().getHostUrl())) {
+                return mConfig.getHostUrl();
             } else {
-                return mConfig.sender.getHostUrl();
+                return mConfig.getSender().getHostUrl();
             }
         }
     }
 
     public String getPid() {
-        return mConfig.pid;
+        return mConfig.getPid();
     }
 
     public String getVid() {
-        return mConfig.vid;
+        return mConfig.getVid();
     }
 
     public String getCid() {
-        return mConfig.cid;
+        return mConfig.getCid();
     }
 
 }

@@ -29,6 +29,17 @@ import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.util.UUID;
 
+import static android.net.ConnectivityManager.TYPE_BLUETOOTH;
+import static android.net.ConnectivityManager.TYPE_DUMMY;
+import static android.net.ConnectivityManager.TYPE_ETHERNET;
+import static android.net.ConnectivityManager.TYPE_MOBILE;
+import static android.net.ConnectivityManager.TYPE_MOBILE_DUN;
+import static android.net.ConnectivityManager.TYPE_MOBILE_HIPRI;
+import static android.net.ConnectivityManager.TYPE_MOBILE_MMS;
+import static android.net.ConnectivityManager.TYPE_MOBILE_SUPL;
+import static android.net.ConnectivityManager.TYPE_WIFI;
+import static android.net.ConnectivityManager.TYPE_WIMAX;
+
 public class AndroidUtils {
 
     private static final String TAG = "AndroidUtils";
@@ -101,7 +112,8 @@ public class AndroidUtils {
             object.put("mno", TextUtils.isEmpty(mon) ? UNKNOWN : mon);
             object.put("key", String.valueOf(System.currentTimeMillis()));
             object.put("ext", ""); // 该字段先不支持
-        } catch (Exception ignore) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return object.toString();
     }
@@ -284,13 +296,13 @@ public class AndroidUtils {
 
     private static boolean isWan(NetworkInfo networkInfo) {
         switch (networkInfo.getType()) {
-            case 0:
-            case 2:
-            case 3:
-            case 4:
-            case 5:
+            case TYPE_MOBILE:
+            case TYPE_MOBILE_MMS:
+            case TYPE_MOBILE_SUPL:
+            case TYPE_MOBILE_DUN:
+            case TYPE_MOBILE_HIPRI:
                 return true;
-            case 1:
+            case TYPE_WIFI:
             default:
                 return false;
         }
@@ -298,16 +310,16 @@ public class AndroidUtils {
 
     private static boolean isWifi(NetworkInfo networkInfo) {
         switch (networkInfo.getType()) {
-            case 1:
-            case 6:
-            case 7:
-            case 9:
+            case TYPE_WIFI:
+            case TYPE_WIMAX:
+            case TYPE_BLUETOOTH:
+            case TYPE_ETHERNET:
                 return true;
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 8:
+            case TYPE_MOBILE_MMS:
+            case TYPE_MOBILE_SUPL:
+            case TYPE_MOBILE_DUN:
+            case TYPE_MOBILE_HIPRI:
+            case TYPE_DUMMY:
             default:
                 return false;
         }
