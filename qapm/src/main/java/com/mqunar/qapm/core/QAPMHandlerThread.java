@@ -5,6 +5,9 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.util.Log;
 
+import com.mqunar.qapm.logging.AgentLogManager;
+import com.mqunar.qapm.logging.AndroidAgentLog;
+
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -30,7 +33,7 @@ public class QAPMHandlerThread {
                 defaultHandlerThread = new HandlerThread(QAPM_THREAD_NAME);
                 defaultHandlerThread.start();
                 defaultHandler = new Handler(defaultHandlerThread.getLooper());
-                Log.w(TAG, "create default handler thread, we should use these thread normal");
+                AgentLogManager.getAgentLog().warning("create default handler thread, we should use these thread normal");
             }
             return defaultHandlerThread;
         }
@@ -40,18 +43,4 @@ public class QAPMHandlerThread {
         return defaultHandler;
     }
 
-    public static HandlerThread getNewHandlerThread(String name) {
-        for (Iterator<HandlerThread> i = handlerThreads.iterator(); i.hasNext(); ) {
-            HandlerThread element = i.next();
-            if (!element.isAlive()) {
-                i.remove();
-                Log.w(TAG, String.format("warning: remove dead handler thread with name %s", name));
-            }
-        }
-        HandlerThread handlerThread = new HandlerThread(name);
-        handlerThread.start();
-        handlerThreads.add(handlerThread);
-        Log.w(TAG, String.format("warning: create new handler thread with name %s, alive thread size:%d", name, handlerThreads.size()));
-        return handlerThread;
-    }
 }

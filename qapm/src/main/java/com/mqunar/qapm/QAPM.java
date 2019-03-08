@@ -2,141 +2,81 @@ package com.mqunar.qapm;
 
 import android.app.Application;
 import android.content.Context;
-import android.os.Handler;
-import android.os.HandlerThread;
+import com.mqunar.qapm.config.Config;
+import com.mqunar.qapm.config.ConfigManager;
 import com.mqunar.qapm.core.ApplicationLifeObserver;
 import com.mqunar.qapm.dao.Storage;
 import com.mqunar.qapm.domain.BaseData;
-import com.mqunar.qapm.domain.NetworkData;
-import com.mqunar.qapm.logging.AgentLogManager;
-import com.mqunar.qapm.logging.AndroidAgentLog;
-import com.mqunar.qapm.logging.NullAgentLog;
-import com.mqunar.qapm.network.sender.ISender;
-import com.mqunar.qapm.network.sender.QAPMSender;
+import com.mqunar.qapm.schedule.WorkHandlerManager;
 import com.mqunar.qapm.tracing.BackgroundTrace;
 import com.mqunar.qapm.tracing.WatchMan;
-import com.mqunar.qapm.utils.AndroidUtils;
-import com.mqunar.qapm.utils.IOUtils;
-import com.mqunar.qapm.utils.NetWorkUtils;
-import com.mqunar.qapm.utils.ReflectUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
 
 /**
- * 最上层的管理类
+ * QAPM的管理类
  */
 public class QAPM implements IQAPM {
 
     private static QAPM sInstance = null;
-    private static boolean isRelease;
+    private static Context mContext;
 
-    public static Context mContext;
-    private ISender mSender;
     private WatchMan mWatchMan;
 
-    private Handler mWorkHandler;
-    private HandlerThread mWorkLooper;
+    public static QAPM getInstance() {
+        return sInstance;
+    }
 
-    private QAPM (Context context, String pid) {
-        mContext = getSafeContext(context) ;
-        setPid(pid);
+    private QAPM(Context context, Config config) {
+        mContext = getSafeContext(context);
+        //交给ConfigManager管理
+        ConfigManager.getInstance().setConfig(config);
         this.mWatchMan = new BackgroundTrace();
+        //初始化工作线程
+        WorkHandlerManager.getInstance().init();
         initApplicationLifeObserver();
-        mWorkLooper = new HandlerThread(QAPMConstant.THREAD_UPLOAD);
-        mWorkLooper.start();
-        mWorkHandler = new Handler(mWorkLooper.getLooper());
         registerActivityLifecycleCallbacks();
     }
 
-    public static QAPM make(Context context, String pid) {
-        if(pid == null || context == null){
-            throw new IllegalArgumentException("pid || context is not null");
+    public static QAPM make(Context context, Config config) {
+        if (context == null) {
+            throw new IllegalArgumentException("context is not null");
         }
-        return makeQAPM(context, pid);
+        return makeQAPM(context, config);
     }
 
-    private static QAPM makeQAPM(Context context, String pid) {
+    private static QAPM makeQAPM(Context context, Config config) {
         if (sInstance == null) {
             synchronized (QAPM.class) {
                 if (sInstance == null) {
-                    sInstance = new QAPM(context, pid);
+                    sInstance = new QAPM(context, config);
                 }
             }
         }
         return sInstance;
     }
 
-    public QAPM setVid(String vid){
-        QAPMConstant.vid = vid;
-        return this;
-    }
-
-    public QAPM setPid(String pid){
-        QAPMConstant.pid = pid;
-        return this;
-    }
-
-    public QAPM setCid(String cid){
-        QAPMConstant.cid = cid;
-        return this;
-    }
-
-    public static QAPM getInstance(){
-        return sInstance;
-    }
-
-    public static void addNetMonitor(Map<String, String> netMonitorMapData) {
-        if (netMonitorMapData != null && netMonitorMapData.size() > 0) {
-            BaseData netMonitorData = NetworkData.convertMap2BaseData(netMonitorMapData);
-            Storage.newStorage().putData(netMonitorData);
-        }
-    }
-
-    public static void addQunarMonitor(BaseData baseData) {
+    @Override
+    public void addCustomMonitor(BaseData baseData) {
         if (baseData != null) {
             Storage.newStorage().putData(baseData);
         }
     }
 
     @Override
-    public void setSender(ISender sender) {
-        if (sender != null) {
-            mSender = sender;
-        }
-    }
-
-    @Override
-    public ISender getSender(){
-        if (mSender == null) {
-            String requestId = (String) ReflectUtils.invokeStaticMethod("com.mqunar.qav.uelog.QAVLog", "getRequestId", null, null);
-            if(isRelease){
-                mSender = new QAPMSender(QAPMConstant.HOST_URL, "", requestId);
-            } else {
-                mSender = new QAPMSender(QAPMConstant.HOST_URL_BETA, QAPMConstant.PITCHER_URL, requestId);
-            }
-        }
-        return mSender;
-    }
-
-    public QAPM withLogEnabled(boolean enabled) {
-        isRelease = !enabled;
-        AgentLogManager.setAgentLog((enabled ? new AndroidAgentLog() : new NullAgentLog()));
-        return this;
-    }
-
-
-    @Override
-    public void release(){
-        if (mWorkLooper != null) {
-            mWorkLooper.quit();
-        }
+    public void release() {
+        WorkHandlerManager.getInstance().quit();
         unregisterActivityLifecycleCallbacks();
     }
 
+    public Context getContext() {
+        return mContext;
+    }
+
     private void registerActivityLifecycleCallbacks() {
-        if(mContext != null && mContext instanceof Application && mWatchMan != null){
+        if(!(mContext instanceof Application)){
+            throw new IllegalStateException("context is not instanceof Application!");
+
+        }
+        if (mWatchMan != null) {
             ((Application) mContext).registerActivityLifecycleCallbacks(mWatchMan);
         }
     }
@@ -149,7 +89,11 @@ public class QAPM implements IQAPM {
     }
 
     private void unregisterActivityLifecycleCallbacks() {
-        if (mContext != null && mContext instanceof Application && mWatchMan != null) {
+        if(!(mContext instanceof Application)){
+            throw new IllegalStateException("context is not instanceof Application!");
+
+        }
+        if (mWatchMan != null) {
             ((Application) mContext).unregisterActivityLifecycleCallbacks(mWatchMan);
             ((Application) mContext).unregisterActivityLifecycleCallbacks(ApplicationLifeObserver.getInstance());
         }
@@ -172,48 +116,4 @@ public class QAPM implements IQAPM {
         }
     }
 
-    public static String getSaveDataFile(String name){
-        String path = IOUtils.getUploadDir(mContext);
-        if(path == null){
-            return null;
-        }
-        File destFile = new File(path, name);
-        try {
-            destFile.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return destFile.toString();
-    }
-
-    public void upload(final boolean isforceSend) {
-//        ExceptionFinder.getInstance().checkForThrows(mContext);
-        //防止主线程调用引起ANR
-        mWorkHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (!NetWorkUtils.isNetworkConnected(mContext)) {// 没有网络先不处理
-                    return;
-                }
-                if (isforceSend) {
-                    Storage.newStorage().popData();
-                }
-                String path = IOUtils.getUploadDir(mContext);
-                if(path != null){
-                    String[] tempFileName = new File(path).list();
-                    if (tempFileName != null && tempFileName.length > 0) {
-                        getSender().send(mContext, path);
-                    }
-                }
-            }
-        });
-    }
-
-    public static String getActiveNetworkCarrier() {
-        return AndroidUtils.carrierNameFromContext(mContext);
-    }
-
-    public static String getActiveNetworkWanType() {
-        return AndroidUtils.wanType(mContext);
-    }
 }

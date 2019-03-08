@@ -1,9 +1,6 @@
 package com.mqunar.qapm.network.instrumentation;
 
-import com.mqunar.qapm.QAPM;
-import com.mqunar.qapm.QAPMConstant;
 import com.mqunar.qapm.network.instrumentation.httpclient.ResponseHandlerImpl;
-import com.mqunar.qapm.utils.AndroidUtils;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -50,7 +47,7 @@ public final class   HttpInstrumentation {
         TransactionState transactionState = new TransactionState();
 
         try {
-            return _(httpClient.execute(target, _(target, request, transactionState), context), transactionState);
+            return inspectAndInstrument(httpClient.execute(target, inspectAndInstrument(target, request, transactionState), context), transactionState);
         } catch (IOException ioe) {
             httpClientError(transactionState, ioe);
             throw ioe;
@@ -65,7 +62,7 @@ public final class   HttpInstrumentation {
         TransactionState transactionState = new TransactionState();
 
         try {
-            return httpClient.execute(target, _(target, request, transactionState), _(responseHandler, transactionState), context);
+            return httpClient.execute(target, inspectAndInstrument(target, request, transactionState), inspectAndInstrument(responseHandler, transactionState), context);
         } catch (ClientProtocolException cpe) {
             httpClientError(transactionState, cpe);
             throw cpe;
@@ -83,7 +80,7 @@ public final class   HttpInstrumentation {
         TransactionState transactionState = new TransactionState();
 
         try {
-            return httpClient.execute(target, _(target, request, transactionState), _(responseHandler, transactionState));
+            return httpClient.execute(target, inspectAndInstrument(target, request, transactionState), inspectAndInstrument(responseHandler, transactionState));
         } catch (ClientProtocolException cpe) {
             httpClientError(transactionState, cpe);
             throw cpe;
@@ -101,7 +98,7 @@ public final class   HttpInstrumentation {
         TransactionState transactionState = new TransactionState();
 
         try {
-            return _(httpClient.execute(target, _(target, request, transactionState)), transactionState);
+            return inspectAndInstrument(httpClient.execute(target, inspectAndInstrument(target, request, transactionState)), transactionState);
         } catch (IOException ioe) {
             httpClientError(transactionState, ioe);
             throw ioe;
@@ -116,7 +113,7 @@ public final class   HttpInstrumentation {
         TransactionState transactionState = new TransactionState();
 
         try {
-            return _(httpClient.execute(_(request, transactionState), context), transactionState);
+            return inspectAndInstrument(httpClient.execute(inspectAndInstrument(request, transactionState), context), transactionState);
         } catch (IOException ioe) {
             httpClientError(transactionState, ioe);
             throw ioe;
@@ -131,7 +128,7 @@ public final class   HttpInstrumentation {
         TransactionState transactionState = new TransactionState();
 
         try {
-            return httpClient.execute(_(request, transactionState), _(responseHandler, transactionState), context);
+            return httpClient.execute(inspectAndInstrument(request, transactionState), inspectAndInstrument(responseHandler, transactionState), context);
         } catch (ClientProtocolException cpe) {
             httpClientError(transactionState, cpe);
             throw cpe;
@@ -149,7 +146,7 @@ public final class   HttpInstrumentation {
         TransactionState transactionState = new TransactionState();
 
         try {
-            return httpClient.execute(_(request, transactionState), _(responseHandler, transactionState));
+            return httpClient.execute(inspectAndInstrument(request, transactionState), inspectAndInstrument(responseHandler, transactionState));
         } catch (ClientProtocolException cpe) {
             httpClientError(transactionState, cpe);
             throw cpe;
@@ -167,7 +164,7 @@ public final class   HttpInstrumentation {
         TransactionState transactionState = new TransactionState();
 
         try {
-            return _(httpClient.execute(_(request, transactionState)), transactionState);
+            return inspectAndInstrument(httpClient.execute(inspectAndInstrument(request, transactionState)), transactionState);
         } catch (IOException ioe) {
             httpClientError(transactionState, ioe);
             throw ioe;
@@ -184,21 +181,19 @@ public final class   HttpInstrumentation {
         }
     }
 
-    private static HttpUriRequest _(HttpUriRequest request, TransactionState transactionState) {
-        request.setHeader(QAPMConstant.TRACE_ID, AndroidUtils.getTraceId(QAPM.mContext));
+    private static HttpUriRequest inspectAndInstrument(HttpUriRequest request, TransactionState transactionState) {
         return TransactionStateUtil.inspectAndInstrument(transactionState, request);
     }
 
-    private static HttpRequest _(HttpHost host, HttpRequest request, TransactionState transactionState) {
-        request.setHeader(QAPMConstant.TRACE_ID, AndroidUtils.getTraceId(QAPM.mContext));
+    private static HttpRequest inspectAndInstrument(HttpHost host, HttpRequest request, TransactionState transactionState) {
         return TransactionStateUtil.inspectAndInstrument(transactionState, host, request);
     }
 
-    private static HttpResponse _(HttpResponse response, TransactionState transactionState) {
+    private static HttpResponse inspectAndInstrument(HttpResponse response, TransactionState transactionState) {
         return TransactionStateUtil.inspectAndInstrument(transactionState, response);
     }
 
-    private static <T> ResponseHandler<? extends T> _(ResponseHandler<? extends T> handler, TransactionState transactionState) {
+    private static <T> ResponseHandler<? extends T> inspectAndInstrument(ResponseHandler<? extends T> handler, TransactionState transactionState) {
         return ResponseHandlerImpl.wrap(handler, transactionState);
     }
 }

@@ -7,6 +7,7 @@ import android.app.Application;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.pm.PackageInfo;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -16,13 +17,28 @@ import android.os.Looper;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
+
+import com.mqunar.qapm.config.ConfigManager;
 import com.mqunar.qapm.logging.AgentLogManager;
+
+import org.json.JSONObject;
+
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.util.UUID;
+
+import static android.net.ConnectivityManager.TYPE_BLUETOOTH;
+import static android.net.ConnectivityManager.TYPE_DUMMY;
+import static android.net.ConnectivityManager.TYPE_ETHERNET;
+import static android.net.ConnectivityManager.TYPE_MOBILE;
+import static android.net.ConnectivityManager.TYPE_MOBILE_DUN;
+import static android.net.ConnectivityManager.TYPE_MOBILE_HIPRI;
+import static android.net.ConnectivityManager.TYPE_MOBILE_MMS;
+import static android.net.ConnectivityManager.TYPE_MOBILE_SUPL;
+import static android.net.ConnectivityManager.TYPE_WIFI;
+import static android.net.ConnectivityManager.TYPE_WIMAX;
 
 public class AndroidUtils {
 
@@ -34,8 +50,6 @@ public class AndroidUtils {
     public static final String TIMEOUT = "timeout";//请求超时
     public static final String UNKNOWN = "Unknown";
     public static final String UNCONNECT = "unconnect";
-
-    public static final int QAPM_OPEN_PAGE_KEY = 0x6FFEDCBA + 1;
 
     private static final Uri PREFERRED_APN_URI = Uri.parse("content://telephony/carriers/preferapn");
     private static String imei = null;
@@ -52,7 +66,8 @@ public class AndroidUtils {
             return UNKNOWN;
         }
         try {
-            TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            TelephonyManager telephonyManager =
+                    (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             imei = telephonyManager.getDeviceId();
         } catch (Throwable e) {
 
@@ -60,8 +75,54 @@ public class AndroidUtils {
         return imei;
     }
 
+    /**
+     * 获取C参数，
+     * 具体格式如下所示 ：
+     * *vid:
+     * *pid:
+     * *cid:
+     * uid:
+     * osVersion: 系统版本
+     * model: 机型
+     * *loc：位置信息，获取不到传Unknown
+     * mno：运营商信息，获取不到传Unknown
+     * key: 时间戳
+     * ext：{}扩展字段，目前没有
+     *
+     * @param context ：Android 上下文环境
+     *
+     * @return json格式的Cparam
+     */
+    public static String getCParam(Context context) {
+        if (context == null) {
+            return null;
+        }
+        JSONObject object = new JSONObject();
+        try {
+            String pkgName = context.getPackageName();
+            String mon = AndroidUtils.carrierNameFromContext(context);
+            String loc = LocationUtils.getLocation(context);
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(pkgName, 0);
+            object.put("pid", ConfigManager.getInstance().getPid());
+            String vid = ConfigManager.getInstance().getVid();
+            object.put("vid", !TextUtils.isEmpty(vid) ? vid : packageInfo.versionCode + "");
+            String cid = ConfigManager.getInstance().getCid();
+            object.put("cid", !TextUtils.isEmpty(cid) ? cid : UNKNOWN);
+            object.put("uid", AndroidUtils.getIMEI(context));
+            object.put("osVersion", Build.VERSION.RELEASE + "_" + Build.VERSION.SDK_INT);
+            object.put("model", Build.MODEL);
+            object.put("loc", TextUtils.isEmpty(loc) ? UNKNOWN : loc);
+            object.put("mno", TextUtils.isEmpty(mon) ? UNKNOWN : mon);
+            object.put("key", String.valueOf(System.currentTimeMillis()));
+            object.put("ext", ""); // 该字段先不支持
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return object.toString();
+    }
+
     public static String getSN() {
-        if(!"unknown".equals(sn)){
+        if (!"unknown".equals(sn)) {
             return sn;
         }
         try {
@@ -100,7 +161,7 @@ public class AndroidUtils {
     }
 
     public static String getMac() {
-        if(!TextUtils.isEmpty(macSerial)){
+        if (!TextUtils.isEmpty(macSerial)) {
             return macSerial;
         }
         String str = "";
@@ -123,8 +184,10 @@ public class AndroidUtils {
     }
 
     /**
-     * ANDROID_ID seems a good choice for a unique device identifier. There are downsides: First, it is not 100%
-     * reliable on releases of Android prior to 2.2 (“Froyo”). Also, there has been at least one widely-observed bug in
+     * ANDROID_ID seems a good choice for a unique device identifier. There are downsides: First, it is not
+     * 100%
+     * reliable on releases of Android prior to 2.2 (“Froyo”). Also, there has been at least one
+     * widely-observed bug in
      * a popular handset from a major manufacturer, where every instance has the same ANDROID_ID.
      */
     public static String getADID(Context context) {
@@ -217,14 +280,15 @@ public class AndroidUtils {
             return UNKNOWN;
         }
 
-        if(!isConnected(networkInfo)) {
+        if (!isConnected(networkInfo)) {
             return UNCONNECT;
-        } else if(isWan(networkInfo)) {
+        } else if (isWan(networkInfo)) {
             return carrierNameFromTelephonyManager(context);
-        } else if(isWifi(networkInfo)) {
+        } else if (isWifi(networkInfo)) {
             return WIFI;
         } else {
-//            log.warning(MessageFormat.format("Unknown network type: {0} [{1}]", new Object[]{networkInfo.getTypeName(), Integer.valueOf(networkInfo.getType())}));
+            //            log.warning(MessageFormat.format("Unknown network type: {0} [{1}]", new
+            // Object[]{networkInfo.getTypeName(), Integer.valueOf(networkInfo.getType())}));
             return UNKNOWN;
         }
     }
@@ -240,7 +304,8 @@ public class AndroidUtils {
             return UNKNOWN;
         }
 
-        return !isConnected(networkInfo) ? UNCONNECT : (isWifi(networkInfo) ? WIFI : (isWan(networkInfo)?connectionNameFromNetworkSubtype(networkInfo.getSubtype()) : UNKNOWN));
+        return !isConnected(networkInfo) ? UNCONNECT : (isWifi(networkInfo) ? WIFI : (isWan(networkInfo) ?
+                connectionNameFromNetworkSubtype(networkInfo.getSubtype()) : UNKNOWN));
     }
 
     private static boolean isConnected(NetworkInfo networkInfo) {
@@ -248,43 +313,45 @@ public class AndroidUtils {
     }
 
     private static boolean isWan(NetworkInfo networkInfo) {
-        switch(networkInfo.getType()) {
-            case 0:
-            case 2:
-            case 3:
-            case 4:
-            case 5:
+        switch (networkInfo.getType()) {
+            case TYPE_MOBILE:
+            case TYPE_MOBILE_MMS:
+            case TYPE_MOBILE_SUPL:
+            case TYPE_MOBILE_DUN:
+            case TYPE_MOBILE_HIPRI:
                 return true;
-            case 1:
+            case TYPE_WIFI:
             default:
                 return false;
         }
     }
 
     private static boolean isWifi(NetworkInfo networkInfo) {
-        switch(networkInfo.getType()) {
-            case 1:
-            case 6:
-            case 7:
-            case 9:
+        switch (networkInfo.getType()) {
+            case TYPE_WIFI:
+            case TYPE_WIMAX:
+            case TYPE_BLUETOOTH:
+            case TYPE_ETHERNET:
                 return true;
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 8:
+            case TYPE_MOBILE_MMS:
+            case TYPE_MOBILE_SUPL:
+            case TYPE_MOBILE_DUN:
+            case TYPE_MOBILE_HIPRI:
+            case TYPE_DUMMY:
             default:
                 return false;
         }
     }
 
     private static NetworkInfo getNetworkInfo(Context context) throws SecurityException {
-        ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         try {
             return connectivityManager.getActiveNetworkInfo();
         } catch (SecurityException var3) {
-//            log.warning("Cannot determine network state. Enable android.permission.ACCESS_NETWORK_STATE in your manifest.");
+            //            log.warning("Cannot determine network state. Enable android.permission
+            // .ACCESS_NETWORK_STATE in your manifest.");
             throw var3;
         }
     }
@@ -293,17 +360,20 @@ public class AndroidUtils {
         if(context == null){
             return UNKNOWN;
         }
-        TelephonyManager telephonyManager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+        TelephonyManager telephonyManager =
+                (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         String networkOperator = telephonyManager.getSimOperator();
-        if(networkOperator == null || networkOperator.trim().isEmpty()){
+        if (networkOperator == null || networkOperator.trim().isEmpty()) {
             networkOperator = UNKNOWN;
         }
-        boolean smellsLikeAnEmulator = Build.PRODUCT.equals("google_sdk") || Build.PRODUCT.equals("sdk") || Build.PRODUCT.equals("sdk_x86") || Build.FINGERPRINT.startsWith("generic");
+        boolean smellsLikeAnEmulator =
+                Build.PRODUCT.equals("google_sdk") || Build.PRODUCT.equals("sdk") || Build.PRODUCT.equals(
+                        "sdk_x86") || Build.FINGERPRINT.startsWith("generic");
         return networkOperator.equals(ANDROID) && smellsLikeAnEmulator ? WIFI : networkOperator;
     }
 
     private static String connectionNameFromNetworkSubtype(int subType) {
-        switch(subType) {
+        switch (subType) {
             case 0:
             default:
                 return UNKNOWN;
@@ -341,8 +411,8 @@ public class AndroidUtils {
     }
 
     /*
-    * 字符串 MD5 加密
-    * */
+     * 字符串 MD5 加密
+     * */
     public static String stringToMD5(String string) {
         try {
             byte[] hash = MessageDigest.getInstance("MD5").digest(string.getBytes("UTF-8"));
@@ -360,14 +430,14 @@ public class AndroidUtils {
 
 
     /*
-    * 获取网络请求ID，md5(uuid + imei)
-    * */
+     * 获取网络请求ID，md5(uuid + imei)
+     * */
     public static String getTraceId(Context context) {
         if(context == null){
             return UNKNOWN;
         }
         String requestId = stringToMD5(UUID.randomUUID().toString() + getIMEI(context));
-        if(requestId == null) {
+        if (requestId == null) {
             requestId = "";
         }
         return requestId;
@@ -392,93 +462,17 @@ public class AndroidUtils {
                 }
             }
         }
-
         String pageName = context.getClass().getSimpleName();
-        try {
-            Class transparentFragmentActivityBaseCls = Class.forName("com.mqunar.core.basectx.launcherfragment.TransparentFragmentActivityBase");
-            Class launcherFragmentActivityBaseCls = Class.forName("com.mqunar.core.basectx.launcherfragment.LauncherFragmentActivityBase");
-            if (transparentFragmentActivityBaseCls.isAssignableFrom(context.getClass())) {
-                Field _fragmentName = transparentFragmentActivityBaseCls.getDeclaredField("_fragmentName");
-                _fragmentName.setAccessible(true);
-                String _pageName = (String) _fragmentName.get(context);
-                if (!TextUtils.isEmpty(_pageName)) {
-                    pageName = _pageName;
-                }
-            } else if (launcherFragmentActivityBaseCls.isAssignableFrom(context.getClass())) {
-                Field _fragmentName = launcherFragmentActivityBaseCls.getDeclaredField("_fragmentName");
-                _fragmentName.setAccessible(true);
-                String _pageName = (String) _fragmentName.get(context);
-                if (!TextUtils.isEmpty(_pageName)) {
-                    pageName = _pageName;
-                }
-            }
-        } catch (Throwable ignore) {
-            ignore.printStackTrace();
-        }
-
-
-        String pkgName = getAtomName(context.getClass());
-
-        //QFragment
-        if (TextUtils.isEmpty(pkgName) &&
-                pageName.indexOf(".") > 0) {
-            //证明是sibei的activity复用机制
-            try {
-                Class<?> clazz = Class.forName(pageName);
-                pkgName = getAtomName(clazz);
-                pageName = clazz.getSimpleName();
-            } catch (Throwable t) {
-                AgentLogManager.getAgentLog().info( "found class crash");
-            }
-        }
-
-        if (!TextUtils.isEmpty(pkgName)) {
-            pageName = pkgName + "." + pageName;
-        }
-
-        //看看有没有自定义的PageName
-        if (context instanceof Activity) {
-            String pn = getPageName((Activity) context);
-            if (!TextUtils.isEmpty(pn)) {
-                return pageName + "-" + replace(pn);
-            }
-        }
 
         return pageName;
     }
 
-    /**
-     * 获取模块名称
-     *
-     * @param clz
-     * @return
-     */
-    public static String getAtomName(Class clz) {
-        try {
-            Class<?> clazz = Class.forName("com.mqunar.core.QunarApkLoader");
-            Method method = clazz.getDeclaredMethod("getPkgName", String.class);
-            if (method == null) {
-                method = clazz.getDeclaredMethod("getPackageName", String.class);
-            }
-            String packageName = (String) method.invoke(null, clz.getName());
-            return packageName.replace("com.mqunar.", "").replace("atom.", "");
-        } catch (Throwable ignore) {
-        }
-        return null;
-    }
 
-    private static String getPageName(Activity page) {
-        View decor = page.getWindow().peekDecorView();
-        if (decor != null) {
-            return getValue(decor, QAPM_OPEN_PAGE_KEY);
-        } else {
-            return null;
-        }
-    }
     public static boolean isInMainThread(final long threadId) {
         return Looper.getMainLooper().getThread().getId() == threadId;
     }
-    public static String getSceneForString( Activity activity, Fragment fragment) {
+
+    public static String getSceneForString(Activity activity, Fragment fragment) {
         if (null == activity) {
             return "null";
         }

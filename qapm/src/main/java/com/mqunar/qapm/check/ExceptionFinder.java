@@ -2,10 +2,6 @@ package com.mqunar.qapm.check;
 
 import android.content.Context;
 
-/**
- * Created by chaos on 17/1/18.
- */
-
 public class ExceptionFinder {
 
     private boolean setPid = false;
@@ -16,7 +12,6 @@ public class ExceptionFinder {
     private static final int STATE_RUN_ON_QUNAR_YES = 1;
     private static final int STATE_RUN_ON_QUNAR_NO = 2;
 
-    private int stateRunOnQunar = STATE_RUN_ON_QUNAR_INIT;
 
     private static ExceptionFinder instance;
 
@@ -43,20 +38,8 @@ public class ExceptionFinder {
         this.setVid = true;
     }
 
-    public boolean runOnQunar(Context context) {
-        if (stateRunOnQunar == STATE_RUN_ON_QUNAR_INIT) {
-            if ("com.Qunar".equals(context.getPackageName())) {
-                stateRunOnQunar = STATE_RUN_ON_QUNAR_YES;
-            } else {
-                stateRunOnQunar = STATE_RUN_ON_QUNAR_NO;
-            }
-        }
-        return stateRunOnQunar == STATE_RUN_ON_QUNAR_YES;
-    }
-
-    //早发现早治疗
     public void checkForThrows(Context context) {
-        if (runOnQunar(context) && !setSender) {
+        if (!setSender) {
             throw new NotSetSenderException("没有设置Sender!");
         }
     }

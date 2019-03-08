@@ -20,7 +20,7 @@ public class NetWorkUtils {
                     return mNetworkInfo.isAvailable();
                 }
             }catch (Exception e){
-
+                e.printStackTrace();
             }
         }
         return false;
