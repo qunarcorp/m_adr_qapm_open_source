@@ -1,7 +1,9 @@
 package com.mqunar.qapm.utils;
 
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -15,8 +17,11 @@ public class LocationUtils {
      */
     public static String getLocation(Context context) {
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        if(locationManager != null){
+        if (locationManager != null) {
             if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                if (checkSelfPermission(context,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(context,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return AndroidUtils.UNKNOWN;
+                }
                 Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 if (location != null) {
                     return location.getLongitude() + "," + location.getLatitude();
@@ -44,6 +49,13 @@ public class LocationUtils {
             }
         }
         return AndroidUtils.UNKNOWN;
+    }
+
+    private static int checkSelfPermission(Context context, String permission) {
+        if (context == null || context.getPackageManager() == null) {
+            return -1;
+        }
+        return context.getPackageManager().checkPermission(permission, context.getPackageName());
     }
 
 }

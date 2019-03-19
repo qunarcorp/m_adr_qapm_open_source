@@ -5,15 +5,12 @@ import android.text.TextUtils;
 import com.mqunar.qapm.QAPMConstant;
 import com.mqunar.qapm.config.ConfigManager;
 import com.mqunar.qapm.tracing.BackgroundTrace;
-import com.mqunar.qapm.utils.AndroidUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.mqunar.qapm.QAPMConstant.TIME_MILLIS_TO_NANO;
 
 /**
  * 网络数据的JavaBean
@@ -44,19 +41,15 @@ public class NetworkData implements BaseData {
 
     /**
      * 排除不需要的图片相关的数据
-     *
      * @return 是否需要排除 true 排除掉 false 保留数据
      */
     public boolean excludeImageData() {
         if (TextUtils.isEmpty(reqUrl)) {
             return true;
         } else {
-            if (reqUrl.contains(ConfigManager.getInstance().getHostUrl())) {
-                // 排除ANDROID_MONITOR监控请求数据
-                return true;
-            }
+            // 排除ANDROID_MONITOR监控请求数据
+            return reqUrl.contains(ConfigManager.getInstance().getHostUrl());
         }
-        return false;
     }
 
     /**
