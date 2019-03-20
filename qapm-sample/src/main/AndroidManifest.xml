@@ -23,12 +23,10 @@
 
         <activity
             android:name=".MainActivity"
-            android:label="快速测试"
             android:screenOrientation="portrait"
             tools:node="replace">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

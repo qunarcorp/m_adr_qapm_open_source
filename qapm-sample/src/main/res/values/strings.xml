@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">QapmDemo</string>
-    <string name="test_okhttp">测试OKHTTP请求</string>
+    <string name="okhttp_sync_get">OKHTTP 异步 Get 请求</string>
+    <string name="okhttp_async_get">OKHTTP 同步 Get 请求</string>
+    <string name="okhttp_sync_post">OKHTTP 异步 Post 请求</string>
+    <string name="okhttp_async_post">OKHTTP 同步 Post 请求</string>
 </resources>

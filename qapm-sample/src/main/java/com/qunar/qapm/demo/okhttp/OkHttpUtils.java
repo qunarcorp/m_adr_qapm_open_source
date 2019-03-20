@@ -39,7 +39,7 @@ public class OkHttpUtils {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.d(TAG, "response : " + response.body().string());
+//                Log.d(TAG, "response : " + response.body().string());
                 if (callback != null) {
                     callback.onResponse(call, response);
                 }
@@ -53,16 +53,19 @@ public class OkHttpUtils {
      *
      * @param url 请求URL
      */
-    public static void startRequest(String url) {
+    public static String asyncGetRequest(String url) {
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder().url(url).get().build();
         Call call = okHttpClient.newCall(request);
         try {
             Response response = call.execute();
-            Log.d(TAG, "run: " + response.body().string());
+            String result = response.body().string();
+            Log.d(TAG, "run: " + result);
+            return result;
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     /**
@@ -77,9 +80,8 @@ public class OkHttpUtils {
         for (Map.Entry<String, String> entry : requestBody.entrySet()) {
             builder.add(entry.getKey(), entry.getValue());
         }
-        FormBody formBody = builder.build();
         Request request = new Request.Builder()
-                .url(url).post(formBody)
+                .url(url).post(builder.build())
                 .build();
         OkHttpClient okHttpClient = new OkHttpClient();
         okHttpClient.newCall(request).enqueue(new Callback() {
@@ -99,7 +101,7 @@ public class OkHttpUtils {
                 for (int i = 0; i < headers.size(); i++) {
                     Log.d(TAG, headers.name(i) + ":" + headers.value(i));
                 }
-                Log.d(TAG, "onResponse: " + response.body().string());
+//                Log.d(TAG, "onResponse: " + response.body().string());
                 if (callback != null) {
                     callback.onResponse(call, response);
                 }
