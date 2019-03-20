@@ -5,4 +5,10 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <Button
+        android:id="@+id/test_okhttp"
+        android:text="@string/test_okhttp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 </RelativeLayout>

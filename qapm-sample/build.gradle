@@ -4,7 +4,7 @@ apply plugin: 'qbuild'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.qunar.moudle"
+        applicationId "com.qunar.qapm.demo"
         minSdkVersion 19
         targetSdkVersion 26
         versionCode 1

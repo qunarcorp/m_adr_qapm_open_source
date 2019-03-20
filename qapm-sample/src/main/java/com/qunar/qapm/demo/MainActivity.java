@@ -1,4 +1,4 @@
-package com.qunar.moudle;
+package com.qunar.qapm.demo;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -7,6 +7,8 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.Toast;
+
+import com.qunar.moudle.R;
 
 import java.util.ArrayList;
 import java.util.List;

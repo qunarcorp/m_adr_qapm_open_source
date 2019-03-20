@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">QunarMoudle</string>
+    <string name="app_name">QapmDemo</string>
+    <string name="test_okhttp">测试OKHTTP请求</string>
 </resources>
