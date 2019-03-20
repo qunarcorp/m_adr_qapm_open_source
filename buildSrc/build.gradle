@@ -1,0 +1,36 @@
+apply plugin: 'groovy'
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'maven'
+
+repositories {
+    mavenCentral()
+    jcenter()
+    google()
+
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.4.12'
+    compile "com.android.tools.build:gradle:3.2.1"
+    compile localGroovy()
+
+    compile gradleApi()
+
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+
+            repository(url: uri('/Users/qitmac000018/AndroidStudioProjects/MyPlugin/os_qapm_plugin'))
+            //设置插件的GAV参数
+            pom.groupId = sonatypeGroupId
+            pom.artifactId = sonatypeArtifactId
+            pom.version = sonatypeVersion
+
+        }
+    }
+}
