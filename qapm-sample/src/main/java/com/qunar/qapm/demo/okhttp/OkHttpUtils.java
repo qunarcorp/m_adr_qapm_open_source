@@ -54,7 +54,7 @@ public class OkHttpUtils {
      * @param url 请求URL
      */
     public static String asyncGetRequest(String url) {
-        OkHttpClient okHttpClient = new OkHttpClient();
+        OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
         Request request = new Request.Builder().url(url).get().build();
         Call call = okHttpClient.newCall(request);
         try {
@@ -83,7 +83,7 @@ public class OkHttpUtils {
         Request request = new Request.Builder()
                 .url(url).post(builder.build())
                 .build();
-        OkHttpClient okHttpClient = new OkHttpClient();
+        OkHttpClient okHttpClient = new OkHttpClient().newBuilder().build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
