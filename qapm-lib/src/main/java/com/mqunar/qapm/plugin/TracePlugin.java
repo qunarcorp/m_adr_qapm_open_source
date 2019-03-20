@@ -4,11 +4,13 @@ import android.app.Application;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import com.mqunar.qapm.logging.AgentLogManager;
+import com.mqunar.qapm.tracing.BatteryTracer;
+import com.mqunar.qapm.tracing.CpuTracer;
 import com.mqunar.qapm.tracing.FPSTracer;
 import com.mqunar.qapm.tracing.FrameBeat;
+import com.mqunar.qapm.tracing.MemoryTracer;
 
 public class TracePlugin extends Plugin {
     private static final String TAG = "TracePlugin";
@@ -23,11 +25,28 @@ public class TracePlugin extends Plugin {
         super.init(app);
         AgentLogManager.getAgentLog().info("trace plugin init");
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            AgentLogManager.getAgentLog().info(String.format("[FrameBeat] API is low Build.VERSION_CODES.JELLY_BEAN(16), TracePlugin is not supported"));
+            AgentLogManager.getAgentLog().info(String.format("[FrameBeat] API is low Build.VERSION_CODES" +
+                    ".JELLY_BEAN(16), TracePlugin is not supported"));
             unSupportPlugin();
             return;
         }
-        mFPSTracer = new FPSTracer(this);
+
+//        if (ConfigManager.getInstance().isFPSEnable()) {
+//            mFPSTracer = new FPSTracer(this, mTraceConfig.fpsInterval());
+//        }
+//        //内存
+//        if (mTraceConfig.isMemoryTraceEnable()) {
+//            MemoryTracer.getInstance().start(getApplication().getApplicationContext());
+//        }
+//        //电量
+//        if (mTraceConfig.isBatteryTraceEnable()) {
+//            BatteryTracer.getInstance().start(getApplication().getApplicationContext());
+//        }
+//
+//        //cpu
+//        if (mTraceConfig.isCPUTraceEnable()) {
+//            CpuTracer.getInstance().start(getApplication().getApplicationContext());
+//        }
 
 
     }
@@ -63,6 +82,10 @@ public class TracePlugin extends Plugin {
         if (null != mFPSTracer) {
             mFPSTracer.onDestroy();
         }
+
+        MemoryTracer.getInstance().stop();
+        BatteryTracer.getInstance().stop();
+        CpuTracer.getInstance().stop();
 
     }
 

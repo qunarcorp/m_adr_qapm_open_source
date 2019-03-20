@@ -1,8 +1,6 @@
 package com.mqunar.qapm.tracing;
 
 import android.app.Activity;
-import android.util.Log;
-import android.util.SparseArray;
 import android.view.ViewTreeObserver;
 
 import com.mqunar.qapm.QAPMConstant;
@@ -11,7 +9,6 @@ import com.mqunar.qapm.core.QAPMHandlerThread;
 import com.mqunar.qapm.dao.Storage;
 import com.mqunar.qapm.domain.BaseData;
 import com.mqunar.qapm.domain.FPSData;
-import com.mqunar.qapm.logging.AgentLog;
 import com.mqunar.qapm.logging.AgentLogManager;
 import com.mqunar.qapm.plugin.TracePlugin;
 import com.mqunar.qapm.schedule.LazyScheduler;
@@ -20,7 +17,8 @@ import com.mqunar.qapm.utils.AndroidUtils;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class FPSTracer extends BaseTracer implements LazyScheduler.ILazyTask, ViewTreeObserver.OnDrawListener {
+public class FPSTracer extends BaseTracer implements LazyScheduler.ILazyTask,
+        ViewTreeObserver.OnDrawListener {
 
     private static final String TAG = "FPSTracer";
 
@@ -30,15 +28,17 @@ public class FPSTracer extends BaseTracer implements LazyScheduler.ILazyTask, Vi
     private boolean isInvalid = false;
     private HashMap<String, LinkedList<Integer>> mReportMap;
     private LazyScheduler mLazyScheduler;
+    private long mFpsInterval;
 
-    public FPSTracer(TracePlugin plugin) {
+    public FPSTracer(TracePlugin plugin, long fpsInterval) {
         super(plugin);
+        this.mFpsInterval = fpsInterval < 1000 ? 1000 : fpsInterval;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        this.mLazyScheduler = new LazyScheduler(QAPMHandlerThread.getDefaultHandlerThread(), 0);
+        this.mLazyScheduler = new LazyScheduler(QAPMHandlerThread.getDefaultHandlerThread(), mFpsInterval);
         if (ApplicationLifeObserver.getInstance().isForeground()) {
             onFront(null);
         }
@@ -57,10 +57,10 @@ public class FPSTracer extends BaseTracer implements LazyScheduler.ILazyTask, Vi
     @Override
     public void onFront(Activity activity) {
         super.onFront(activity);
-//          if (null != mLazyScheduler) {
-//              mLazyScheduler.cancel();
-//             this.mLazyScheduler.setUp(this, true);
-//         }
+        //          if (null != mLazyScheduler) {
+        //              mLazyScheduler.cancel();
+        //             this.mLazyScheduler.setUp(this, true);
+        //         }
     }
 
     /**
@@ -242,7 +242,8 @@ public class FPSTracer extends BaseTracer implements LazyScheduler.ILazyTask, Vi
         } catch (Exception e) {
             AgentLogManager.getAgentLog().error(String.format("json error , error :%s", e.getMessage()));
         }
-        AgentLogManager.getAgentLog().info(String.format("scene:%s count: %s average_fps:%s sumTime:%s ms", scene, count, fps, sumTime / OFFSET_TO_MS));
+        AgentLogManager.getAgentLog().info(String.format("scene:%s count: %s average_fps:%s sumTime:%s ms",
+                scene, count, fps, sumTime / OFFSET_TO_MS));
 
     }
 

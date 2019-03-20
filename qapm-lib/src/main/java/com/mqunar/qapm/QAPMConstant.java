@@ -10,6 +10,10 @@ public class QAPMConstant {
     public static final String LOG_TYPE = "apm";        // 当前上传的内容标识符，apm：性能监控相关。
     public static final String LOG_NET_TYPE = "adrNet"; // 网络监控的Log_type
     public static final String LOG_FPS_TYPE = "fps";    // 页面帧率监控的log_type
+    public static final String LOG_UI_TYPE = "adrUI";   // 页面加载监控的Log_type
+    public static final String LOG_MEMORY_TYPE = "memory";   // 内存的监控数据的log
+    public static final String LOG_CPU_TYPE = "cpu";    // cpu的监控数据的log_type
+    public static final String LOG_BATTERY_TYPE = "battery";
 
     // Thread 相关
     public static final String THREAD_UPLOAD = "QAPM-Thread-upload";
