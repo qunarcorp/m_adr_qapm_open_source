@@ -2,6 +2,7 @@
 .DS_Store
 .gradle/
 
+.idea/
 .idea/caches/
 .idea/gradle.xml
 .idea/libraries/
@@ -21,3 +22,6 @@ m_adr_qapm_open_source.iml
 ext-args.txt
 
 local.properties
+.idea/codeStyles/
+.idea/runConfigurations.xml
+.idea/vcs.xml
