@@ -159,20 +159,10 @@ QAPM.getInstance().addCustomMonitor(new BaseAPMData() {
 ### 七、更新日志
 
 ```
-2016.11.04 : 网络收集稳定版本上线
-2016.11.11 : xxxxxx提供接入
-2016.11.24 : xxxxxx提供接入
-2016.12.06 : xxxxxx提供接入
-2016.12.28 : xxxxxx提供接入入
-2017.01.06 : xxxxxx提供接入
-2017.01.18 : xxxxxx提供接入
-2017.01.22 : xxxxxx提供接入xxxxx提供接入xxxxxx提供接入
-2017.01.24 : 商xxxxxx提供接入
-2017.04.01 : xxxxxx提供接入xxxxxx提供接入
-2017.04.24 : xxxxxx提供接入xxxxxx提供接入
-2017.08.04 : xxxxxx提供接入xxxxxx提供接入线
-2017.10.30 : xxxxxx提供接入
-2017.12.15 : xxxxxx提供接入
+2019.03.20 : 
+    更新项目结构，增加gradle plugin 代码到buildSrc目录
+    增加okhttp3网络监控，并提供sample
+            
 ```
 
 ### 八、反馈与建议
