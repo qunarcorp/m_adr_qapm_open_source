@@ -1,5 +1,5 @@
 /build
-app.iml
+*.iml
 ext-args.txt
 .DS_Store
 .idea/
