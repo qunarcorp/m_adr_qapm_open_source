@@ -6,10 +6,7 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
-
-import com.mqunar.qapm.utils.LocationUtils;
 
 import java.util.ArrayList;
 import java.util.List;

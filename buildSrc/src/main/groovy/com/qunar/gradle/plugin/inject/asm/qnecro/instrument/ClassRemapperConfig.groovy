@@ -10,6 +10,7 @@ import com.qunar.gradle.plugin.inject.model.ClassMethod
  */
 class ClassRemapperConfig {
     private final Map<ClassMethod, ClassMethod> methodWrappers
+    private final Map<ClassMethod, ClassMethod> methodInits
     private final Map<String, Collection<ClassMethod>> callSiteReplacements
 
     private static volatile ClassRemapperConfig instance
@@ -29,15 +30,13 @@ class ClassRemapperConfig {
         Map<String, String> remappings = PropertiesUtils.getPropertiesMap(NecroConstants.MAPPING_PATH)
         if (remappings) {
             methodWrappers = PropertiesUtils.getMethodWrappers(remappings)
+            methodInits = PropertiesUtils.getMethodInits(remappings)
             callSiteReplacements = PropertiesUtils.getCallSiteReplacements(remappings)
         }
     }
 
     public ClassMethod getMethodWrapper(ClassMethod orgMethod) {
-        if (methodWrappers) {
-            return methodWrappers.get(orgMethod)
-        }
-        return orgMethod
+        return methodWrappers ? methodWrappers.get(orgMethod) : orgMethod
     }
 
     public Collection<ClassMethod> getCallSiteReplacements(String className, String methodName, String methodDesc) {
