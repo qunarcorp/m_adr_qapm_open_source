@@ -5,7 +5,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 
 import com.mqunar.qapm.QAPMConstant;
-import com.mqunar.qapm.config.ConfigManager;
+import com.mqunar.qapm.config.QConfigManager;
 import com.mqunar.qapm.dao.Storage;
 import com.mqunar.qapm.logging.AgentLog;
 import com.mqunar.qapm.logging.AgentLogManager;
@@ -70,7 +70,7 @@ public class WorkHandlerManager {
                         for (final String fileName : uploadFiles) {
                             String bParam = IOUtils.file2Str(fileName);
                             String cParam = AndroidUtils.getCParam(context);
-                            ConfigManager.getInstance().getSender().sendParamData(bParam, cParam,
+                            QConfigManager.getInstance().getSender().sendParamData(bParam, cParam,
                                     new ISender.SenderListener() {
                                         @Override
                                         public void onSendDataSuccess() {

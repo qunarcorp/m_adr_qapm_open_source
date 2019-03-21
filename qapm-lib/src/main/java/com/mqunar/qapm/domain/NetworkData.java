@@ -3,7 +3,7 @@ package com.mqunar.qapm.domain;
 import android.text.TextUtils;
 
 import com.mqunar.qapm.QAPMConstant;
-import com.mqunar.qapm.config.ConfigManager;
+import com.mqunar.qapm.config.QConfigManager;
 import com.mqunar.qapm.tracing.BackgroundTrace;
 
 import org.json.JSONException;
@@ -48,7 +48,7 @@ public class NetworkData implements BaseData {
             return true;
         } else {
             // 排除ANDROID_MONITOR监控请求数据
-            return reqUrl.contains(ConfigManager.getInstance().getHostUrl());
+            return reqUrl.contains(QConfigManager.getInstance().getHostUrl());
         }
     }
 

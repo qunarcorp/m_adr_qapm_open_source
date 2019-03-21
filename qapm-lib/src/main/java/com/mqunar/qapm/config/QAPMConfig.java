@@ -6,12 +6,11 @@ import com.mqunar.qapm.logging.AgentLogManager;
 import com.mqunar.qapm.network.sender.ISender;
 
 /**
- * Author: haonan.he ;<p/>
  * Date: 2019/2/28,5:45 PM ;<p/>
  * Description: APM配置项;<p/>
  * Other: ;
  */
-public class Config {
+public class QAPMConfig {
 
     private String pid = "";// 客户端Id
     private String vid = "";// app版本号
@@ -19,6 +18,16 @@ public class Config {
     private boolean isLogEnable;//是否输出log开关
     private ISender sender; //日志发送sender对象
     private String hostUrl; //日志上传地址
+
+    private TraceConfig fpsTraceConfig;
+    private TraceConfig cpuTraceConfig;
+    private TraceConfig memoryTraceConfig;
+    private TraceConfig batteryTraceConfig;
+
+    public static class TraceConfig { //监控项配置
+        public boolean isUseTrace;//是否使用
+        public long delayMillis;//监控间隔
+    }
 
     public String getPid() {
         return pid;
@@ -49,8 +58,24 @@ public class Config {
         return hostUrl;
     }
 
+    public TraceConfig getFpsTraceConfig() {
+        return fpsTraceConfig;
+    }
+
+    public TraceConfig getCpuTraceConfig() {
+        return cpuTraceConfig;
+    }
+
+    public TraceConfig getMemoryTraceConfig() {
+        return memoryTraceConfig;
+    }
+
+    public TraceConfig getBatteryTraceConfig() {
+        return batteryTraceConfig;
+    }
+
     public static class ConfigBuilder {
-        private Config config = new Config();
+        private QAPMConfig config = new QAPMConfig();
 
         public ConfigBuilder setPid(String pid) {
             this.config.pid = pid;
@@ -82,7 +107,27 @@ public class Config {
             return this;
         }
 
-        public Config build() {
+        public ConfigBuilder setFpsTraceConfig(TraceConfig traceConfig) {
+            this.config.fpsTraceConfig = traceConfig;
+            return this;
+        }
+
+        public ConfigBuilder setCpuTraceConfig(TraceConfig traceConfig) {
+            this.config.cpuTraceConfig = traceConfig;
+            return this;
+        }
+
+        public ConfigBuilder setMemoryTraceConfig(TraceConfig traceConfig) {
+            this.config.memoryTraceConfig = traceConfig;
+            return this;
+        }
+
+        public ConfigBuilder setBatteryTraceConfig(TraceConfig traceConfig) {
+            this.config.batteryTraceConfig = traceConfig;
+            return this;
+        }
+
+        public QAPMConfig build() {
             //check相关参数，如果异常直接提示错误
             if (TextUtils.isEmpty(config.pid)) {
                 throw new IllegalArgumentException("Please configure pid!");

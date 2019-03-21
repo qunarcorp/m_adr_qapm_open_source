@@ -18,7 +18,7 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.View;
 
-import com.mqunar.qapm.config.ConfigManager;
+import com.mqunar.qapm.config.QConfigManager;
 import com.mqunar.qapm.logging.AgentLogManager;
 
 import org.json.JSONObject;
@@ -103,10 +103,10 @@ public class AndroidUtils {
             String mon = AndroidUtils.carrierNameFromContext(context);
             String loc = LocationUtils.getLocation(context);
             PackageInfo packageInfo = context.getPackageManager().getPackageInfo(pkgName, 0);
-            object.put("pid", ConfigManager.getInstance().getPid());
-            String vid = ConfigManager.getInstance().getVid();
+            object.put("pid", QConfigManager.getInstance().getPid());
+            String vid = QConfigManager.getInstance().getVid();
             object.put("vid", !TextUtils.isEmpty(vid) ? vid : packageInfo.versionCode + "");
-            String cid = ConfigManager.getInstance().getCid();
+            String cid = QConfigManager.getInstance().getCid();
             object.put("cid", !TextUtils.isEmpty(cid) ? cid : UNKNOWN);
             object.put("uid", AndroidUtils.getIMEI(context));
             object.put("osVersion", Build.VERSION.RELEASE + "_" + Build.VERSION.SDK_INT);

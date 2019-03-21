@@ -3,8 +3,8 @@ package com.mqunar.qapm;
 import android.app.Application;
 import android.content.Context;
 
-import com.mqunar.qapm.config.Config;
-import com.mqunar.qapm.config.ConfigManager;
+import com.mqunar.qapm.config.QAPMConfig;
+import com.mqunar.qapm.config.QConfigManager;
 import com.mqunar.qapm.core.ApplicationLifeObserver;
 import com.mqunar.qapm.dao.Storage;
 import com.mqunar.qapm.domain.BaseData;
@@ -26,10 +26,10 @@ public class QAPM implements IQAPM {
         return sInstance;
     }
 
-    private QAPM(Context context, Config config) {
+    private QAPM(Context context, QAPMConfig config) {
         mContext = getSafeContext(context);
         //交给ConfigManager管理
-        ConfigManager.getInstance().setConfig(config);
+        QConfigManager.getInstance().setConfig(config);
         this.mWatchMan = new BackgroundTrace();
         //初始化工作线程
         WorkHandlerManager.getInstance().init();
@@ -37,14 +37,14 @@ public class QAPM implements IQAPM {
         registerActivityLifecycleCallbacks();
     }
 
-    public static QAPM make(Context context, Config config) {
+    public static QAPM make(Context context, QAPMConfig config) {
         if (context == null) {
             throw new IllegalArgumentException("context is not null");
         }
         return makeQAPM(context, config);
     }
 
-    private static QAPM makeQAPM(Context context, Config config) {
+    private static QAPM makeQAPM(Context context, QAPMConfig config) {
         if (sInstance == null) {
             synchronized (QAPM.class) {
                 if (sInstance == null) {
