@@ -1,7 +1,5 @@
 package com.mqunar.qapm.network.instrumentation;
 
-import android.util.Log;
-
 import com.mqunar.qapm.QAPM;
 import com.mqunar.qapm.dao.Storage;
 import com.mqunar.qapm.domain.NetworkData;
@@ -29,6 +27,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by jingmin.xing on 2015/8/30.
@@ -48,7 +47,7 @@ public class TransactionStateUtil {
     public TransactionStateUtil() {
     }
 
-    private static void inspectAndInstrument(TransactionState transactionState, String url, String httpMethod) {
+    public static void inspectAndInstrument(TransactionState transactionState, String url, String httpMethod) {
         log.debug("inspectAndInstrument url " + url);
         transactionState.setUrl(url);
         transactionState.setHttpMethod(httpMethod);
@@ -167,6 +166,38 @@ public class TransactionStateUtil {
                                 && !REQUEST_HEADER_CONTENT_LENGTH.equals(headerName)
                                 && !REQUEST_HEADER_COOKIE.equals(headerName)) {
                             usefulHeaders.put(header.getName(), header.getValue());
+                        }
+                    }
+                }
+                //  将需要的Header 存起来
+                if (usefulHeaders.size() > 0) {
+                    transactionState.setHeaders(usefulHeaders);
+                }
+            }
+        }catch (Throwable throwable) {
+            //记录header失败
+            log.warning("parseRequestHeader Failed parse header: " + throwable.toString());
+        }
+    }
+
+    public static void parseRequestHeader(TransactionState transactionState, okhttp3.Request request) {
+        try {
+            okhttp3.Headers headers = request.headers();
+            if (headers != null) {
+                //只收集 request header 中指定字段
+                HashMap<String, String> usefulHeaders = new HashMap<>();
+                Set<Map.Entry<String, List<String>>> entrySet = headers.toMultimap().entrySet();
+                for (Map.Entry<String, List<String>> entry : entrySet) {
+                    if (entry != null && !"".equals(entry.getValue().get(0))) {
+                        String headerName = entry.getKey();
+                        if (!REQUEST_HEADER_CONTENT_TYPE.equals(headerName)
+                                && !REQUEST_HEADER_X_CLIENTENCODING.equals(headerName)
+                                && !REQUEST_HEADER_HOST.equals(headerName)
+                                && !REQUEST_HEADER_CONNECTION.equals(headerName)
+                                && !REQUEST_HEADER_ACCEPT_ENCODING.equals(headerName)
+                                && !REQUEST_HEADER_CONTENT_LENGTH.equals(headerName)
+                                && !REQUEST_HEADER_COOKIE.equals(headerName)) {
+                            usefulHeaders.put(entry.getKey(), entry.getValue().get(0));
                         }
                     }
                 }
