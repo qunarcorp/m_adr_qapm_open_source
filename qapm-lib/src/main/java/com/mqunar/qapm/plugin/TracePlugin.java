@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.mqunar.qapm.config.QConfigManager;
 import com.mqunar.qapm.logging.AgentLogManager;
 import com.mqunar.qapm.tracing.BatteryTracer;
 import com.mqunar.qapm.tracing.CpuTracer;
@@ -31,22 +32,22 @@ public class TracePlugin extends Plugin {
             return;
         }
 
-//        if (ConfigManager.getInstance().isFPSEnable()) {
-//            mFPSTracer = new FPSTracer(this, mTraceConfig.fpsInterval());
-//        }
-//        //内存
-//        if (mTraceConfig.isMemoryTraceEnable()) {
-//            MemoryTracer.getInstance().start(getApplication().getApplicationContext());
-//        }
-//        //电量
-//        if (mTraceConfig.isBatteryTraceEnable()) {
-//            BatteryTracer.getInstance().start(getApplication().getApplicationContext());
-//        }
-//
-//        //cpu
-//        if (mTraceConfig.isCPUTraceEnable()) {
-//            CpuTracer.getInstance().start(getApplication().getApplicationContext());
-//        }
+        if (QConfigManager.getInstance().isUseFpsTrace()) {
+            mFPSTracer = new FPSTracer(this, QConfigManager.getInstance().getFpsTraceInterval());
+        }
+        //内存
+        if (QConfigManager.getInstance().isUseMemoryTrace()) {
+            MemoryTracer.getInstance().start(getApplication().getApplicationContext());
+        }
+        //电量
+        if (QConfigManager.getInstance().isUseBatteryTrace()) {
+            BatteryTracer.getInstance().start(getApplication().getApplicationContext());
+        }
+
+        //cpu
+        if (QConfigManager.getInstance().isUseCpuTrace()) {
+            CpuTracer.getInstance().start(getApplication().getApplicationContext());
+        }
 
 
     }

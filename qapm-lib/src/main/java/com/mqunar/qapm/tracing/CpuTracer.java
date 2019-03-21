@@ -6,10 +6,12 @@ import android.content.Context;
 import android.util.Log;
 
 import com.mqunar.qapm.QAPMConstant;
+import com.mqunar.qapm.config.QConfigManager;
 import com.mqunar.qapm.core.ApplicationLifeObserver;
 import com.mqunar.qapm.dao.Storage;
 import com.mqunar.qapm.domain.CpuData;
 import com.mqunar.qapm.schedule.AsyncExecutor;
+import com.mqunar.qapm.utils.CpuUtils;
 import com.mqunar.qapm.utils.ProcessUtils;
 
 import java.util.List;
@@ -23,11 +25,12 @@ import java.util.List;
 public class CpuTracer implements ApplicationLifeObserver.IObserver {
 
     private static final String TAG = "CpuTracer";
-    private static final int DELAY_MILLIS = 2 * 1000;
+    private long DELAY_MILLIS;
 
     private boolean mIsStart = false;
     private boolean mIsCanWork = true;
     private Context mContext;
+    private CpuUtils mCpuUtils;
 
     private static CpuTracer instance;
 
@@ -50,7 +53,7 @@ public class CpuTracer implements ApplicationLifeObserver.IObserver {
         @Override
         public void run() {
             if (mIsCanWork) {
-                CpuData cpuData = getCpuInfo();
+                CpuData cpuData = getCpuUtils();
                 if (null != cpuData) {
                     Storage.newStorage().putData(cpuData);
                 }
@@ -59,11 +62,10 @@ public class CpuTracer implements ApplicationLifeObserver.IObserver {
         }
     };
 
-    private CpuInfo mCpuInfo;
-
     private void init(Context context) {
         mContext = context;
-        mCpuInfo = new CpuInfo(context);
+        mCpuUtils = new CpuUtils(context);
+        DELAY_MILLIS = QConfigManager.getInstance().getCpuTraceInterval();
     }
 
     /**
@@ -71,11 +73,11 @@ public class CpuTracer implements ApplicationLifeObserver.IObserver {
      *
      * @return
      */
-    private CpuData getCpuInfo() {
-        //Log.d(TAG, "name: " + mCpuInfo.getCpuName());//cpu名称
-        //Log.d(TAG, "num: " + mCpuInfo.getCpuNum());//个数
+    private CpuData getCpuUtils() {
+        //Log.d(TAG, "name: " + mCpuUtils.getCpuName());//cpu名称
+        //Log.d(TAG, "num: " + mCpuUtils.getCpuNum());//个数
 
-        List<String> ratioInfo = mCpuInfo.getCpuRatioInfo();
+        List<String> ratioInfo = mCpuUtils.getCpuRatioInfo();
         if (ratioInfo != null && ratioInfo.size() > 0) {
             CpuData cpuData = new CpuData();
             if (!ratioInfo.get(0).equals("0") & !ratioInfo.get(0).equals("0.00")) {
@@ -97,8 +99,8 @@ public class CpuTracer implements ApplicationLifeObserver.IObserver {
 
 
     public void start(Context context) {
-        init(context);
         if (!mIsStart) {
+            init(context);
             AsyncExecutor.executeDelayed(runnable, 0);
             mIsStart = true;
             mIsCanWork = true;
@@ -107,6 +109,7 @@ public class CpuTracer implements ApplicationLifeObserver.IObserver {
 
     public void stop() {
         mIsCanWork = false;
+        mIsStart = false;
     }
 
     @Override

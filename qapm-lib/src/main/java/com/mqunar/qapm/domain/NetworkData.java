@@ -3,17 +3,14 @@ package com.mqunar.qapm.domain;
 import android.text.TextUtils;
 
 import com.mqunar.qapm.QAPMConstant;
-import com.mqunar.qapm.config.ConfigManager;
+import com.mqunar.qapm.config.QConfigManager;
 import com.mqunar.qapm.tracing.BackgroundTrace;
-import com.mqunar.qapm.utils.AndroidUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.mqunar.qapm.QAPMConstant.TIME_MILLIS_TO_NANO;
 
 /**
  * 网络数据的JavaBean
@@ -51,7 +48,7 @@ public class NetworkData implements BaseData {
         if (TextUtils.isEmpty(reqUrl)) {
             return true;
         } else {
-            if (reqUrl.contains(ConfigManager.getInstance().getHostUrl())) {
+            if (reqUrl.contains(QConfigManager.getInstance().getHostUrl())) {
                 // 排除ANDROID_MONITOR监控请求数据
                 return true;
             }

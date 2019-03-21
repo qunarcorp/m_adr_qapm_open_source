@@ -7,6 +7,7 @@ import android.content.Context;
 import android.os.Debug;
 
 import com.mqunar.qapm.QAPMConstant;
+import com.mqunar.qapm.config.QConfigManager;
 import com.mqunar.qapm.core.ApplicationLifeObserver;
 import com.mqunar.qapm.dao.Storage;
 import com.mqunar.qapm.domain.MemoryData;
@@ -22,7 +23,7 @@ import java.text.NumberFormat;
 public class MemoryTracer implements ApplicationLifeObserver.IObserver {
 
     private static final String TAG = "MemoryTracer";
-    private static final int DELAY_MILLIS = 2 * 1000;
+    private long DELAY_MILLIS;
     private static final float B2KB = 1024;
     private boolean mIsStart = false;
     private boolean mIsCanWork = true;
@@ -58,8 +59,9 @@ public class MemoryTracer implements ApplicationLifeObserver.IObserver {
         }
     };
 
-    public void init(Context context) {
+    private void init(Context context) {
         mContext = context;
+        DELAY_MILLIS = QConfigManager.getInstance().getMemoryTraceInterval();
     }
 
     /**
@@ -105,8 +107,8 @@ public class MemoryTracer implements ApplicationLifeObserver.IObserver {
     }
 
     public void start(Context context) {
-        mContext = context;
         if (!mIsStart) {
+            init(context);
             AsyncExecutor.executeDelayed(runnable, 0);
             mIsStart = true;
             mIsCanWork = true;
@@ -115,6 +117,7 @@ public class MemoryTracer implements ApplicationLifeObserver.IObserver {
 
     public void stop() {
         mIsCanWork = false;
+        mIsStart = false;
     }
 
     @Override

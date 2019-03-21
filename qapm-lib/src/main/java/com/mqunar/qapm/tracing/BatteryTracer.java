@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.os.BatteryManager;
 
 import com.mqunar.qapm.QAPMConstant;
+import com.mqunar.qapm.config.QConfigManager;
 import com.mqunar.qapm.core.ApplicationLifeObserver;
 import com.mqunar.qapm.dao.Storage;
 import com.mqunar.qapm.domain.BatteryData;
@@ -21,10 +22,10 @@ import com.mqunar.qapm.schedule.AsyncExecutor;
  * Description: ;<p/>
  * Other: ;
  */
-public class BatteryTracer implements ApplicationLifeObserver.IObserver{
+public class BatteryTracer implements ApplicationLifeObserver.IObserver {
 
     private static final String TAG = "BatteryTracer";
-    private static final int DELAY_MILLIS = 60 * 1000;
+    private long DELAY_MILLIS;
 
     private boolean mIsStart = false;
     private boolean mIsCanWork = true;
@@ -60,8 +61,9 @@ public class BatteryTracer implements ApplicationLifeObserver.IObserver{
         }
     };
 
-    public void init(Context context) {
+    private void init(Context context) {
         mContext = context;
+        DELAY_MILLIS = QConfigManager.getInstance().getBatteryTraceInterval();
     }
 
     /**
@@ -92,8 +94,8 @@ public class BatteryTracer implements ApplicationLifeObserver.IObserver{
 
 
     public void start(Context context) {
-        mContext = context;
         if (!mIsStart) {
+            init(context);
             AsyncExecutor.executeDelayed(runnable, 0);
             mIsStart = true;
             mIsCanWork = true;
@@ -102,6 +104,7 @@ public class BatteryTracer implements ApplicationLifeObserver.IObserver{
 
     public void stop() {
         mIsCanWork = false;
+        mIsStart = false;
     }
 
     @Override

@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package com.mqunar.qapm.tracing;
+package com.mqunar.qapm.utils;
 
 import android.content.Context;
 import android.os.Process;
@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 /**
  * operate CPU information
  */
-public class CpuInfo {
+public class CpuUtils {
 
     private static final String LOG_TAG = "CpuTracer";
 
@@ -56,7 +56,7 @@ public class CpuInfo {
     private static final String CPU_INFO_PATH = "/proc/cpuinfo";
     private static final String CPU_STAT = "/proc/stat";
 
-    public CpuInfo(Context context) {
+    public CpuUtils(Context context) {
         this.pid = Process.myPid();
         this.context = context;
         cpuUsedRatio = new ArrayList<>();
