@@ -1,1 +1,1 @@
-include ':qapm-sample', ':qapm-lib'
+include ':qapm-sample', ':qapm-lib', ':qapm_storage'
