@@ -319,7 +319,7 @@ public class TransactionStateUtil {
         NetworkData networkData = transactionState.end();
         log.debug("end " + networkData.toString());
         if(networkData != null && !networkData.excludeImageData() && !networkData.excludeIllegalData()) {
-            Storage.newStorage().putData(networkData);
+            Storage.newStorage(QAPM.getInstance().getContext()).putData(networkData);
         }
     }
 }

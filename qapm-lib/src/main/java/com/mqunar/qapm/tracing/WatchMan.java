@@ -15,8 +15,6 @@ import com.mqunar.qapm.utils.AndroidUtils;
  */
 public abstract class WatchMan implements Application.ActivityLifecycleCallbacks {
 
-    private static final String TAG = WatchMan.class.getSimpleName();
-
     private boolean mIsFirstActivityStart = true;
     private boolean mIsFirstActivityStop = true;
     private boolean isBackToDesktop = false;
@@ -105,7 +103,6 @@ public abstract class WatchMan implements Application.ActivityLifecycleCallbacks
     /**
      * 设施网络发送器，并且发送器必须是实现了ISender接口的类
      *
-     * @param context
      * @param isForceSend 是否强制发送
      */
     private void upload(Context context, boolean isForceSend) {

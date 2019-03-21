@@ -11,7 +11,6 @@ import org.json.JSONObject;
  */
 public class BatteryData extends BaseAPMData {
 
-    public String action;
     public String logTime;
 
     public String currentBatteryRate;//电量

@@ -43,4 +43,5 @@ uploadArchives {
 dependencies {
     compileOnly 'com.squareup.okhttp3:okhttp:3.7.0'
     compileOnly 'com.squareup.okio:okio:1.2.0'
+    implementation project(':qapm_storage')
 }

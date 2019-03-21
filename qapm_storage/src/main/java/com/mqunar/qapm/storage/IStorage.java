@@ -25,16 +25,16 @@ public interface IStorage {
      * @return 是否删除成功，或者本次删除多少条数据
      */
     int deleteDataByTime (long time);
-    boolean deleteData (long time);
+    boolean deleteData (int id);
     boolean cleanData ();
-    boolean cleanDataByCount ();
+    boolean cleanDataByCount (int count);
 
     /**
      * insert 插入相关语句
      * @param jsonData 所要插入的语句
      * @return  是否插入成功
      */
-    boolean insertData (String jsonData);
+    boolean insertData (String action, long time, String jsonData);
 
     /**
      * update 更新相关语句

@@ -11,7 +11,6 @@ import org.json.JSONObject;
  */
 public class CpuData extends BaseAPMData {
 
-    public String action;
     public String logTime;
 
     public String currentProcess;//进程名

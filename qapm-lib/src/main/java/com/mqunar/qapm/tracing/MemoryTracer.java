@@ -52,7 +52,7 @@ public class MemoryTracer implements ApplicationLifeObserver.IObserver {
             if (mIsCanWork) {
                 MemoryData memoryData = getMemoryInfo();
                 if (null != memoryData) {
-                    Storage.newStorage().putData(memoryData);
+                    Storage.newStorage(mContext).putData(memoryData);
                 }
                 AsyncExecutor.executeDelayed(runnable, DELAY_MILLIS);
             }

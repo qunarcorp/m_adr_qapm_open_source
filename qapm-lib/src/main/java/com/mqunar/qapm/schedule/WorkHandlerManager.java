@@ -61,7 +61,8 @@ public class WorkHandlerManager {
                     return;
                 }
                 if (isForceSend) {
-                    Storage.newStorage().popData();
+//                    Storage.newStorage().popData();
+                    // 上传了
                 }
                 String uploadDir = IOUtils.getUploadDir(context);
                 if (uploadDir != null) {

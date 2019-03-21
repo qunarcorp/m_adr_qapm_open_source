@@ -1,6 +1,6 @@
 package com.mqunar.qapm;
 
-import com.mqunar.qapm.domain.BaseData;
+import com.mqunar.qapm.domain.BaseAPMData;
 
 /**
  * QAPM接口类
@@ -17,6 +17,6 @@ public interface IQAPM {
      *
      * @param baseData 自定义数据 <extend BaseData>
      */
-    void addCustomMonitor(BaseData baseData);
+    void addCustomMonitor(BaseAPMData baseData);
 
 }

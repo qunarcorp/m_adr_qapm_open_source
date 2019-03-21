@@ -55,7 +55,7 @@ public class CpuTracer implements ApplicationLifeObserver.IObserver {
             if (mIsCanWork) {
                 CpuData cpuData = getCpuUtils();
                 if (null != cpuData) {
-                    Storage.newStorage().putData(cpuData);
+                    Storage.newStorage(mContext).putData(cpuData);
                 }
                 AsyncExecutor.executeDelayed(runnable, DELAY_MILLIS);
             }

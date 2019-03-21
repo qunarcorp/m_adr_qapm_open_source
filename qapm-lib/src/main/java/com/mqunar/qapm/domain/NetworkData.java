@@ -16,7 +16,7 @@ import java.util.Map;
  * 网络数据的JavaBean
  * Created by pengchengpc.liu on 2018/11/22.
  */
-public class NetworkData implements BaseData {
+public class NetworkData extends BaseAPMData {
 
     private static final long serialVersionUID = 1L;
     private static final int BACKGROUND_START_TIME = -1;
@@ -24,7 +24,6 @@ public class NetworkData implements BaseData {
     public long startTimeInNano;
     public long endTimeInNano;
 
-    public String action; // hyNet/rnNet/iosNet/adrNet
     public String reqUrl; //请求的url地址
     public String startTime; // 网络请求开始时的时间戳,精确到毫秒
     public String endTime; // 网络请求结束或者出错时的时间戳,精确到毫秒
@@ -98,8 +97,8 @@ public class NetworkData implements BaseData {
 
     @Override
     public String toString() {
-        return "NetworkData{" + "action='" + action + '\'' +
-                ", reqUrl='" + reqUrl + '\'' + ", startTime='" + startTime + '\'' +
+        return "NetworkData{" +
+                "reqUrl='" + reqUrl + '\'' + ", startTime='" + startTime + '\'' +
                 ", endTime='" + endTime + '\'' + ", reqSize='" + reqSize + '\'' +
                 ", resSize='" + resSize + '\'' + ", httpCode='" + httpCode + '\'' +
                 ", hf='" + hf + '\'' + ", netType='" + netType + '\'' +

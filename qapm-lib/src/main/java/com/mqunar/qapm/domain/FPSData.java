@@ -10,7 +10,6 @@ import org.json.JSONObject;
 public class FPSData extends BaseAPMData {
 
     private static final long serialVersionUID = 1L;
-    public String action; // hyNet/rnNet/iosNet/adrNet
     public String page;//当前场景
     public FPSLevel dropLevel;//sumTime时间段 丢帧评级占比
     public FPSLevel dropSum;//sumTime时间段 丢失的具体帧数

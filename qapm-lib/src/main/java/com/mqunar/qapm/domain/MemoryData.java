@@ -8,7 +8,6 @@ import org.json.JSONObject;
  */
 public class MemoryData extends BaseAPMData {
 
-    public String action;
     public String logTime;
     //public String extra;
 

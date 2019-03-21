@@ -54,7 +54,7 @@ public class BatteryTracer implements ApplicationLifeObserver.IObserver {
             if (mIsCanWork) {
                 BatteryData batteryData = getBatteryInfo();
                 if (null != batteryData) {
-                    Storage.newStorage().putData(batteryData);
+                    Storage.newStorage(mContext).putData(batteryData);
                 }
                 AsyncExecutor.executeDelayed(runnable, DELAY_MILLIS);
             }

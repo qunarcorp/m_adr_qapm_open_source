@@ -3,6 +3,7 @@ package com.mqunar.qapm.tracing;
 import android.app.Activity;
 import android.view.ViewTreeObserver;
 
+import com.mqunar.qapm.QAPM;
 import com.mqunar.qapm.QAPMConstant;
 import com.mqunar.qapm.core.ApplicationLifeObserver;
 import com.mqunar.qapm.core.QAPMHandlerThread;
@@ -250,7 +251,7 @@ public class FPSTracer extends BaseTracer implements LazyScheduler.ILazyTask,
     @Override
     protected void sendReport(BaseData baseData) {
         FPSData fpsData = (FPSData) baseData;
-        Storage.newStorage().putData(fpsData);
+        Storage.newStorage(QAPM.getInstance().getContext()).putData(fpsData);
     }
 
     private enum DropStatus {

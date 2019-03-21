@@ -7,6 +7,7 @@ import com.mqunar.qapm.config.QAPMConfig;
 import com.mqunar.qapm.config.QConfigManager;
 import com.mqunar.qapm.core.ApplicationLifeObserver;
 import com.mqunar.qapm.dao.Storage;
+import com.mqunar.qapm.domain.BaseAPMData;
 import com.mqunar.qapm.domain.BaseData;
 import com.mqunar.qapm.schedule.WorkHandlerManager;
 import com.mqunar.qapm.tracing.BackgroundTrace;
@@ -56,9 +57,9 @@ public class QAPM implements IQAPM {
     }
 
     @Override
-    public void addCustomMonitor(BaseData baseData) {
+    public void addCustomMonitor(BaseAPMData baseData) {
         if (baseData != null) {
-            Storage.newStorage().putData(baseData);
+            Storage.newStorage(mContext).putData(baseData);
         }
     }
 

@@ -1,95 +1,27 @@
 package com.mqunar.qapm.dao;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
 
-import com.mqunar.qapm.QAPM;
 import com.mqunar.qapm.QAPMConstant;
-import com.mqunar.qapm.domain.BaseData;
-import com.mqunar.qapm.utils.IOUtils;
+import com.mqunar.qapm.domain.BaseAPMData;
+import com.mqunar.qapm.storage.QApmStorage;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+/**
+ * QAPM-main 模块对 QAPM-Storage 模块的引用，主要通过 QApmStorage 类 进行数据
+ * 层面的持久化。
+ *
+ * @author  Qunar Team
+ * @since   19 - 03 - 21
+ */
+public class Storage {
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class Storage implements IStorage {
-
-    private static final int MAX_SIZE = 10;
+    private QApmStorage mQApmStorage;
     private static Storage sInstance = null;
 
     private static HandlerThread mStorageHandlerThread;
     private static Handler mStorageHandler;
-
-    private static List<BaseData> mStorageData = new ArrayList<>();
-
-    private Storage() {
-
-    }
-
-    public static Storage newStorage() {
-        if (sInstance == null) {
-            synchronized (Storage.class) {
-                if (sInstance == null) {
-                    sInstance = new Storage();
-                }
-            }
-        }
-        return sInstance;
-    }
-
-    @Override
-    public void putData(final BaseData data) {
-        getStorageHandler().post(new Runnable() {
-            public void run() {
-                if (data == null) {
-                    return;
-                }
-                if (mStorageData.size() < MAX_SIZE - 1) {
-                    mStorageData.add(data);
-                    return;
-                }
-                saveData(data);
-            }
-        });
-    }
-
-    @Override
-    public void saveData(final BaseData data) {
-        if (data != null) {
-            mStorageData.add(data);
-        }
-        String saveDataFilePath = IOUtils.getSaveDataFile(QAPM.getInstance().getContext(),
-                System.currentTimeMillis() + "");
-        if (saveDataFilePath != null) {
-            IOUtils.str2File(convertBaseData2Json(mStorageData), saveDataFilePath);
-            mStorageData.clear();
-        }
-    }
-
-    private String convertBaseData2Json(List<BaseData> mStorageData) {
-        JSONArray jsonArray = new JSONArray();
-        for (int i = 0; i < mStorageData.size(); i++) {
-            JSONObject jsonObject = mStorageData.get(i).toJSONObject();
-            if (jsonObject != null) {
-                jsonArray.put(jsonObject);
-            }
-        }
-        return jsonArray.toString();
-
-    }
-
-    @Override
-    public void popData() {
-        getStorageHandler().post(new Runnable() {
-            public void run() {
-                if (mStorageData != null && mStorageData.size() > 0) {
-                    saveData(null);
-                }
-            }
-        });
-    }
 
     private HandlerThread getStorageHandlerThread() {
         if (mStorageHandlerThread == null) {
@@ -109,4 +41,28 @@ public class Storage implements IStorage {
         }
         return mStorageHandler;
     }
+
+    private Storage(Context context) {
+        mQApmStorage = QApmStorage.getInstance(context);
+    }
+
+    public static Storage newStorage(Context context) {
+        if (sInstance == null) {
+            synchronized (Storage.class) {
+                if (sInstance == null) {
+                    sInstance = new Storage(context);
+                }
+            }
+        }
+        return sInstance;
+    }
+
+    public void putData(final BaseAPMData data) {
+        getStorageHandler().post(new Runnable() {
+            public void run() {
+                mQApmStorage.insertData(data.action, System.currentTimeMillis(), data.toJSONObject().toString());
+            }
+        });
+    }
+
 }
