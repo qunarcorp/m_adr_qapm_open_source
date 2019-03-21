@@ -41,19 +41,15 @@ public class NetworkData implements BaseData {
 
     /**
      * 排除不需要的图片相关的数据
-     *
      * @return 是否需要排除 true 排除掉 false 保留数据
      */
     public boolean excludeImageData() {
         if (TextUtils.isEmpty(reqUrl)) {
             return true;
         } else {
-            if (reqUrl.contains(QConfigManager.getInstance().getHostUrl())) {
-                // 排除ANDROID_MONITOR监控请求数据
-                return true;
-            }
+            // 排除ANDROID_MONITOR监控请求数据
+            return reqUrl.contains(QConfigManager.getInstance().getHostUrl());
         }
-        return false;
     }
 
     /**

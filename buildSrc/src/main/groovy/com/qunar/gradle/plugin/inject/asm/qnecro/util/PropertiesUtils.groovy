@@ -15,29 +15,28 @@ class PropertiesUtils {
      * @return
      */
     public static Map getPropertiesMap(String path) {
-        Properties props = new Properties();
-        URL resource = PropertiesUtils.class.getResource(path);
+        Properties props = new Properties()
+        URL resource = PropertiesUtils.class.getResource(path)
         if (resource == null) {
             QBuildLogger.err("Unable to find the type map");
-            System.exit(1);
+            System.exit(1)
         }
-        InputStream inputStream = null;
+        InputStream inputStream = null
         try {
             inputStream = new ByteArrayInputStream(resource.bytes)
-            props.load(inputStream);
-            return props;
+            props.load(inputStream)
         } catch (Throwable ex) {
-            QBuildLogger.err("Unable to read the type map", ex);
-            System.exit(1);
+            QBuildLogger.err(ex,"Unable to read the type map")
+            System.exit(1)
         } finally {
             if (inputStream != null) {
                 try {
-                    inputStream.close();
-                }
-                catch (IOException e) {
+                    inputStream.close()
+                } catch (IOException e) {
                 }
             }
         }
+        return props
     }
 
     /**
@@ -57,6 +56,25 @@ class PropertiesUtils {
         }
         return methodWrappers;
     }
+
+    /**
+     * 解析文件中INIT_METHOD:开头的配置
+     * @param remappings
+     * @return
+     */
+    public static Map<ClassMethod, ClassMethod> getMethodInits(Map remappings) {
+        HashMap<ClassMethod, ClassMethod> methodWrappers = new HashMap()
+        remappings.entrySet().each { entry ->
+            if (entry.key.startsWith(NecroConstants.INIT_METHOD_IDENTIFIER)) {
+                String orgSig = entry.key.substring(NecroConstants.INIT_METHOD_IDENTIFIER.length())
+                ClassMethod orgMethod = getClassMethod(orgSig)
+                ClassMethod wrappingMethod = getClassMethod(entry.value as String)
+                methodWrappers.put(orgMethod, wrappingMethod)
+            }
+        }
+        return methodWrappers
+    }
+
 
     /**
      * 解析文件中REPLACE_CALL_SITE:开头的

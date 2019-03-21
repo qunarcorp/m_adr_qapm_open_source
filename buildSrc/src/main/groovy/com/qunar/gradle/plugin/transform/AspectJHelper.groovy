@@ -1,5 +1,6 @@
 package com.qunar.gradle.plugin.transform
 
+import com.qunar.gradle.plugin.inject.asm.qnecro.HookInitMethodClassProxy
 import com.qunar.gradle.plugin.inject.asm.qnecro.instrument.ClassRemapperConfig
 import com.qunar.gradle.plugin.inject.asm.qnecro.instrument.InstrumentationContext
 import com.qunar.gradle.plugin.inject.proxy.DexerMainProxy
@@ -27,6 +28,9 @@ public class AspectJHelper {
 
     static byte[] filterAspectJ(byte[] bytes){
         def result = DexerMainProxy.invoke(new InstrumentationContext(ClassRemapperConfig.instance), bytes)
+        if (ClassRemapperConfig.instance.methodInits && !ClassRemapperConfig.instance.methodInits.isEmpty()) {
+            result = HookInitMethodClassProxy.invoke(result)
+        }
         return result
     }
 

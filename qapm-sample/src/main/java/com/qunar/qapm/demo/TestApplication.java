@@ -1,4 +1,4 @@
-package com.qunar.moudle;
+package com.qunar.qapm.demo;
 
 import android.app.Application;
 

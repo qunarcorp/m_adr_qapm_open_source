@@ -1,15 +1,15 @@
 package com.qunar.gradle.plugin.inject.proxy
 
 
-import com.qunar.gradle.plugin.inject.asm.qnecro.classvisitor.*
+import com.qunar.gradle.plugin.inject.asm.qnecro.classvisitor.ContextInitializationClassVisitor
+import com.qunar.gradle.plugin.inject.asm.qnecro.classvisitor.NecroAsmAnnotationVisitor
+import com.qunar.gradle.plugin.inject.asm.qnecro.classvisitor.NecroAsmWrapReplaceClassVisitor
 import com.qunar.gradle.plugin.inject.asm.qnecro.constants.NecroConstants
 import com.qunar.gradle.plugin.inject.asm.qnecro.instrument.InstrumentationContext
 import com.qunar.gradle.plugin.utils.QBuildLogger
 import groovyjarjarasm.asm.ClassReader
 import groovyjarjarasm.asm.ClassVisitor
 import groovyjarjarasm.asm.ClassWriter
-import org.gradle.util.TextUtil
-
 /**
  *
  * 用来hook业务需要的类
@@ -67,7 +67,7 @@ class DexerMainProxy {
  * @param packageName
  * @return
  */
-    private static boolean isExcludedPackage(String packageName) {
+    private static boolean isExcludedPackage(String className) {
 //        if (packageName == null || packageName.length() == 0) {
 //            return false
 //        }
@@ -80,7 +80,7 @@ class DexerMainProxy {
 //        return false
 //
         return NecroConstants.EXCLUDED_PACKAGES.find {
-            packageName?.startsWith(it)
+            className?.startsWith(it)
         }
     }
 

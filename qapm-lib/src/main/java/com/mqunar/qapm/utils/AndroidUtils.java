@@ -62,6 +62,9 @@ public class AndroidUtils {
         if (!TextUtils.isEmpty(imei)) {
             return imei;
         }
+        if(context == null){
+            return UNKNOWN;
+        }
         try {
             TelephonyManager telephonyManager =
                     (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
@@ -188,6 +191,9 @@ public class AndroidUtils {
      * a popular handset from a major manufacturer, where every instance has the same ANDROID_ID.
      */
     public static String getADID(Context context) {
+        if(context == null){
+            return "";
+        }
         try {
             String aid = android.provider.Settings.Secure.getString(context.getContentResolver(),
                     android.provider.Settings.Secure.ANDROID_ID);
@@ -207,6 +213,9 @@ public class AndroidUtils {
      */
     public static String getApnName(Context context) {
         String apnName = "";
+        if(context == null){
+            return apnName;
+        }
         try {
             Cursor cursor = context.getContentResolver().query(PREFERRED_APN_URI, new String[]{"_id",
                     "apn", "type"}, null, null, null);
@@ -248,6 +257,9 @@ public class AndroidUtils {
      */
     public static String getSimOperator(Context context) {
         String operator = "";
+        if(context == null){
+            return operator;
+        }
         try {
             TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             operator = manager.getSimOperator();
@@ -258,10 +270,13 @@ public class AndroidUtils {
     }
 
     public static String carrierNameFromContext(Context context) {
+        if(context == null){
+            return UNKNOWN;
+        }
         NetworkInfo networkInfo;
         try {
             networkInfo = getNetworkInfo(context);
-        } catch (SecurityException var3) {
+        } catch (Exception var3) {
             return UNKNOWN;
         }
 
@@ -279,10 +294,13 @@ public class AndroidUtils {
     }
 
     public static String wanType(Context context) {
+        if(context == null){
+            return UNKNOWN;
+        }
         NetworkInfo networkInfo;
         try {
             networkInfo = getNetworkInfo(context);
-        } catch (SecurityException var3) {
+        } catch (Exception var3) {
             return UNKNOWN;
         }
 
@@ -339,11 +357,14 @@ public class AndroidUtils {
     }
 
     private static String carrierNameFromTelephonyManager(Context context) {
+        if(context == null){
+            return UNKNOWN;
+        }
         TelephonyManager telephonyManager =
                 (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         String networkOperator = telephonyManager.getSimOperator();
         if (networkOperator == null || networkOperator.trim().isEmpty()) {
-            networkOperator = "unknown";
+            networkOperator = UNKNOWN;
         }
         boolean smellsLikeAnEmulator =
                 Build.PRODUCT.equals("google_sdk") || Build.PRODUCT.equals("sdk") || Build.PRODUCT.equals(
@@ -412,6 +433,9 @@ public class AndroidUtils {
      * 获取网络请求ID，md5(uuid + imei)
      * */
     public static String getTraceId(Context context) {
+        if(context == null){
+            return UNKNOWN;
+        }
         String requestId = stringToMD5(UUID.randomUUID().toString() + getIMEI(context));
         if (requestId == null) {
             requestId = "";
@@ -420,7 +444,9 @@ public class AndroidUtils {
     }
 
     public static String getPageName(Context context) {
-
+        if(context == null){
+            return UNKNOWN;
+        }
         if (context instanceof Application) {
             AgentLogManager.getAgentLog().info("Warning! getPageName but context is application!");
         }
