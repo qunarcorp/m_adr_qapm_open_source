@@ -14,6 +14,8 @@ import com.mqunar.qapm.utils.AndroidUtils;
 import com.mqunar.qapm.utils.IOUtils;
 import com.mqunar.qapm.utils.NetWorkUtils;
 
+import java.io.File;
+
 /**
  * Author: haonan.he ;<p/>
  * Date: 2019/3/1,4:47 PM ;<p/>
@@ -68,7 +70,7 @@ public class WorkHandlerManager {
                     String[] uploadFiles = IOUtils.getFileByNameFilter(uploadDir);
                     if (uploadFiles != null && uploadFiles.length > 0) {
                         for (final String fileName : uploadFiles) {
-                            String bParam = IOUtils.file2Str(fileName);
+                            String bParam = IOUtils.file2Str(uploadDir + File.separator + fileName);
                             String cParam = AndroidUtils.getCParam(context);
                             QConfigManager.getInstance().getSender().sendParamData(bParam, cParam,
                                     new ISender.SenderListener() {
