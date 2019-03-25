@@ -32,7 +32,7 @@ public class FPSTracer extends BaseTracer implements LazyScheduler.ILazyTask,
 
     public FPSTracer(TracePlugin plugin, long fpsInterval) {
         super(plugin);
-        this.mFpsInterval = fpsInterval < 1000 ? 1000 : fpsInterval;
+        this.mFpsInterval = fpsInterval;
     }
 
     @Override
