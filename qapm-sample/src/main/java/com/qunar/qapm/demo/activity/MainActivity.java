@@ -1,4 +1,4 @@
-package com.qunar.qapm.demo;
+package com.qunar.qapm.demo.activity;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.qunar.qapm.demo.R;
 import com.qunar.qapm.demo.okhttp.OkHttpUtils;
 
 import java.io.IOException;
@@ -26,6 +27,8 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class MainActivity extends Activity implements Callback {
+
+
     String[] permissions = new String[]{
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION};
